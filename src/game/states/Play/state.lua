@@ -21,7 +21,8 @@ function PlayState:enter(prevState)
         {
             speed = 2,
             acceleration = 100,
-            drag = 20
+            drag = 20,
+            camera = self.camera,
         }
     )
 end
