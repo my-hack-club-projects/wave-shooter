@@ -16,6 +16,12 @@ function State:init(game)
 
     self.entity = {
         new = function(entityClass, ...)
+            local props = ...
+
+            if not props["game"] then
+                props["game"] = self.game
+            end
+
             local entity = entityClass(...)
 
             table.insert(self._entities, entity)
