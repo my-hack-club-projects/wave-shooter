@@ -6,16 +6,14 @@ local Entity = require 'classes.entity'
 local Character = oo.class(Entity)
 
 function Character:init(props)
-    assert(props.camera, "Character needs a camera")
     assert(props.game, "Character needs a game")
-
-    self.camera = props.camera
 
     Entity.init(self, props)
 
     self.size = Vector2(1, 1)
 
     self.name = "Character"
+    self.health = props.health or 100
     self.speed = props.speed or 1
     self.acceleration = props.acceleration or 1
     self.drag = props.drag or 1
@@ -38,7 +36,6 @@ end
 function Character:update(dt)
     -- Get direction of keyboard input
     local direction = self:getDirection()
-
     assert(
         direction and direction.x and direction.y and direction.magnitude and direction.unit,
         "Character:getDirection() must return a Vector2"
@@ -54,34 +51,18 @@ function Character:update(dt)
     -- And subtract drag
     local velocityDirection, velocityMagnitude = self.velocity.unit, self.velocity.magnitude
     if velocityMagnitude > 0 then
-        velocityMagnitude = mathf.approach(velocityMagnitude, 0, self.drag * dt)
+        velocityMagnitude = mathf.clamp(mathf.approach(velocityMagnitude, 0, self.drag * dt), -self.speed, self.speed)
         self.velocity = velocityDirection * velocityMagnitude
     end
-
-    -- Clamp the velocity to self.speed
-    self.velocity.x = mathf.clamp(self.velocity.x, -self.speed, self.speed)
-    self.velocity.y = mathf.clamp(self.velocity.y, -self.speed, self.speed)
 
     -- Add the velocity to the player position
     self.position = self.position + self.velocity * self.speed * dt
 
-    -- Move the camera so that the player is in the center
-    self.camera.position = self.position
-
-    -- Get mouse position in the real world
-    local mouseX, mouseY = love.mouse.getPosition()
-    local playerPositionPx = (self.position - self.camera.position) * self.camera:getUnitSize() +
-        Vector2(love.graphics.getWidth() / 2, love.graphics.getHeight() / 2)
-
-    -- Get the angle between the player and the mouse
-    self.mouseDirection = (Vector2(mouseX, mouseY) - playerPositionPx).unit
-    local angle = math.atan2(self.mouseDirection.y, self.mouseDirection.x)
-    self.rotation = angle
-
-    -- Fire
-    if love.mouse.isDown(1) and love.timer.getTime() - self.lastFired > 1 / self.fireRate then
-        self.lastFired = love.timer.getTime()
-        self:fire()
+    for i, bullet in ipairs(self.bullets) do
+        bullet:update(dt)
+        if bullet.dead then
+            table.remove(self.bullets, i)
+        end
     end
 end
 

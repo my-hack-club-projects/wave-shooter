@@ -17,6 +17,8 @@ function Bullet:init(props)
     self.direction = props.direction
     self.speed = props.speed or 10
     self.lifeDuration = props.lifeDuration or 10
+
+    self.alive = true
 end
 
 function Bullet:update(dt)
@@ -24,6 +26,7 @@ function Bullet:update(dt)
     self.lifeDuration = self.lifeDuration - dt
 
     if self.lifeDuration <= 0 then
+        self.alive = false
         self:destroy()
     end
 end
