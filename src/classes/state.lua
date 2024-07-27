@@ -47,6 +47,16 @@ function State:init(game)
             end
         end,
 
+        findAll = function(name)
+            local entities = {}
+            for i, entity in ipairs(self._entities) do
+                if entity.name == name then
+                    table.insert(entities, entity)
+                end
+            end
+            return entities
+        end,
+
         remove = function(entity)
             for i, e in ipairs(self._entities) do
                 if e == entity then

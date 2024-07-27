@@ -14,6 +14,8 @@ function Player:init(props)
 
     self.name = "Player"
     self.camera = props.camera
+
+    self.autoAimMagnitude = props.autoAimMagnitude or 1
 end
 
 function Player:getDirection()
@@ -31,7 +33,7 @@ function Player:fire()
             {
                 position = self.position,
                 rotation = self.rotation,
-                direction = self.mouseDirection,
+                direction = self.aimDirection,
                 speed = 10,
                 damage = 1
             }
@@ -47,8 +49,25 @@ function Player:update(dt)
     Character.update(self, dt)
 
     local mouseWorldPosition = Vector2(self.camera:screenToWorld(love.mouse.getPosition()))
-    self.mouseDirection = (mouseWorldPosition - self.position).unit
-    self.rotation = math.atan2(self.mouseDirection.y, self.mouseDirection.x)
+
+    -- Aim (aim assist / locking)
+    local allEnemies = self.game.current.entity.findAll("Enemy")
+    local closest, closestDistance = nil, math.huge
+    for _, enemy in ipairs(allEnemies) do
+        local distance = (enemy.position - mouseWorldPosition).magnitude - enemy.size.magnitude / 2
+
+        if distance < self.autoAimMagnitude and distance < closestDistance then
+            closest = enemy
+            closestDistance = distance
+        end
+    end
+
+    if closest then
+        mouseWorldPosition = closest.position
+    end
+
+    self.aimDirection = (mouseWorldPosition - self.position).unit
+    self.rotation = math.atan2(self.aimDirection.y, self.aimDirection.x)
 
     -- Fire
     if love.mouse.isDown(1) and love.timer.getTime() - self.lastFired > 1 / self.fireRate then
