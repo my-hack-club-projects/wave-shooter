@@ -34,6 +34,7 @@ function Player:fire()
                 position = self.position,
                 rotation = self.rotation,
                 direction = self.aimDirection,
+                randomness = (1 - self.accuracy * self.InaccurateRange),
                 speed = 10,
                 damage = 1
             }

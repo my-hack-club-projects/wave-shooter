@@ -13,8 +13,13 @@ function Bullet:init(props)
     self.name = "Bullet"
     self.size = Vector2(0.4, 0.4)
     self.damage = props.damage or 1
+    self.randomness = props.randomness or 0
 
-    self.direction = props.direction
+    local randomAngle = math.atan2(props.direction.y, props.direction.x) +
+        (math.random() * 2 - 1) * math.rad(self.randomness)
+
+    local randomDirection = Vector2(math.cos(randomAngle), math.sin(randomAngle))
+    self.direction = randomDirection
     self.speed = props.speed or 10
     self.lifeDuration = props.lifeDuration or 10
 

@@ -5,6 +5,8 @@ local Vector2 = require 'types.vector2'
 local Entity = require 'classes.entity'
 local Character = oo.class(Entity)
 
+Character.InaccurateRange = 100
+
 function Character:init(props)
     assert(props.game, "Character needs a game")
 
@@ -22,6 +24,7 @@ function Character:init(props)
 
     self.lastFired = 0
     self.fireRate = props.fireRate or 10
+    self.accuracy = props.accuracy or 0.1
     self.bullets = {}
 end
 
