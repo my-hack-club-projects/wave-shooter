@@ -46,17 +46,9 @@ end
 function Player:update(dt)
     Character.update(self, dt)
 
-    -- Get mouse position in the real world
-    local mouseX, mouseY = love.mouse.getPosition()
-    local playerPositionPx = (self.position - self.camera.position) * self.camera:getUnitSize() +
-        Vector2(love.graphics.getWidth() / 2, love.graphics.getHeight() / 2)
-
-    -- Get the angle between the player and the mouse
-    self.mouseDirection = (Vector2(mouseX, mouseY) - playerPositionPx).unit
-    local angle = math.atan2(self.mouseDirection.y, self.mouseDirection.x)
-    self.rotation = angle
-
-    self:updateCamera()
+    local mouseWorldPosition = Vector2(self.camera:screenToWorld(love.mouse.getPosition()))
+    self.mouseDirection = (mouseWorldPosition - self.position).unit
+    self.rotation = math.atan2(self.mouseDirection.y, self.mouseDirection.x)
 
     -- Fire
     if love.mouse.isDown(1) and love.timer.getTime() - self.lastFired > 1 / self.fireRate then
