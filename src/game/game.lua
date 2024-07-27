@@ -40,6 +40,16 @@ function Game:init()
     self.width = 0
     self.height = 0
 
+    -- physics
+    self.physics = {
+        aabb = function(pos1, size1, pos2, size2)
+            return pos1.x < pos2.x + size2.x and
+                pos1.x + size1.x > pos2.x and
+                pos1.y < pos2.y + size2.y and
+                pos1.y + size1.y > pos2.y
+        end,
+    }
+
     -- other
     self.shared = {} -- shared data between states
 

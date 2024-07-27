@@ -25,6 +25,13 @@ function Character:init(props)
     self.bullets = {}
 end
 
+function Character:takeDamage(damage)
+    self.health = self.health - damage
+    if self.health <= 0 then
+        self:destroy()
+    end
+end
+
 function Character:getDirection()
     error("Subclasses must implement this method")
 end

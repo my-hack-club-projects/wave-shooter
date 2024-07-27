@@ -74,6 +74,12 @@ function Player:update(dt)
         self.lastFired = love.timer.getTime()
         self:fire()
     end
+
+    for _, bullet in ipairs(self.bullets) do
+        bullet:checkCollision(allEnemies)
+    end
+
+    self:updateCamera()
 end
 
 return Player

@@ -31,4 +31,14 @@ function Bullet:update(dt)
     end
 end
 
+function Bullet:checkCollision(characters)
+    for _, character in ipairs(characters) do
+        if self.game.physics.aabb(self.position, self.size, character.position, character.size) then
+            character:takeDamage(self.damage)
+            self.alive = false
+            self:destroy()
+        end
+    end
+end
+
 return Bullet

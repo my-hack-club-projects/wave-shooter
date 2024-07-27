@@ -14,8 +14,26 @@ function Enemy:init(props)
     self.speed = 1.5
     self.acceleration = 100
 
-    self.target = props.target or self.game.current.entity.find("Player")
+    self.targets = props.targets or { self.game.current.entity.find("Player") }
     self.targetDirection = Vector2()
+    self.target = self.targets[1]
+end
+
+function Enemy:getTarget()
+    -- return the closest target from self.targets
+
+    local closestTarget = self.targets[1]
+    local closestDistance = (closestTarget.position - self.position).magnitude
+
+    for _, target in ipairs(self.targets) do
+        local distance = (target.position - self.position).magnitude
+        if distance < closestDistance then
+            closestTarget = target
+            closestDistance = distance
+        end
+    end
+
+    return closestTarget
 end
 
 function Enemy:getDirection()
@@ -33,6 +51,14 @@ function Enemy:getDirection()
     self.rotation = math.atan2(self.targetDirection.y, self.targetDirection.x)
 
     return self.targetDirection
+end
+
+function Enemy:update(dt)
+    Character.update(self, dt)
+
+    for _, bullet in ipairs(self.bullets) do
+        bullet:checkCollision(self.targets)
+    end
 end
 
 function Enemy:fire()
