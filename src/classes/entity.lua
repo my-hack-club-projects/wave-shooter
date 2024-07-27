@@ -21,6 +21,10 @@ function Entity:init(props)
     assert(self.scaleAxis == "x" or self.scaleAxis == "y" or self.scaleAxis == nil, "Invalid scale axis")
 end
 
+function Entity:destroy()
+    self.state.entity.remove(self)
+end
+
 function Entity.update()
 end
 
