@@ -1,11 +1,12 @@
 local oo = require 'libs.oo'
 local mathf = require 'classes.mathf'
 local Vector2 = require 'types.vector2'
+local Signal = require 'libs.signal'
 
 local Entity = require 'classes.entity'
 local Character = oo.class(Entity)
 
-Character.InaccurateRange = 100
+Character.InaccurateRange = 90
 
 function Character:init(props)
     assert(props.game, "Character needs a game")
@@ -24,13 +25,23 @@ function Character:init(props)
 
     self.lastFired = 0
     self.fireRate = props.fireRate or 10
-    self.accuracy = props.accuracy or 0.1
+    self.accuracy = props.accuracy or 0.9
+    self.damage = props.damage or 1
+    self.bulletSpeed = props.bulletSpeed or 10
+    self.bulletLifeDuration = props.bulletLifeDuration or 10
+    self.bulletCount = props.bulletCount or 1
+
     self.bullets = {}
+
+    self.signals = {
+        died = Signal(),
+    }
 end
 
 function Character:takeDamage(damage)
     self.health = self.health - damage
     if self.health <= 0 then
+        self.signals.died:dispatch()
         self:destroy()
     end
 end

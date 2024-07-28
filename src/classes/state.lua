@@ -5,6 +5,7 @@ local State = oo.class()
 function State:init(game)
     assert(game, "State must be initialized with a game object")
 
+    self.data = {}
     self.name = "BaseState"
     self.game = game
     self.prevState = nil
