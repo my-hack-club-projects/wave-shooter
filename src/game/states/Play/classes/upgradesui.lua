@@ -30,27 +30,6 @@ function UpgradesUI:init(game)
     self.upgradesContainer.position = UDim2(0.5, 0, 0.97, 0)
     self.upgradesContainer.anchorPoint = Vector2(0.5, 1)
     self.upgradesContainer.color = Color4(0, 1, 0, 1)
-
-    self:fillWithData({
-        upgrades = {
-            {
-                name = "Upgrade 1",
-                description = "This is the first upgrade",
-                tier = 1,
-            },
-            {
-                name = "Upgrade 2",
-                description = "This is the second upgrade",
-                tier = 2,
-            },
-            {
-                name = "Upgrade 3",
-                description = "This is the third upgrade",
-                tier = 3,
-            },
-        },
-        maxTier = 3,
-    })
 end
 
 function UpgradesUI:fillWithData(data)
@@ -93,7 +72,34 @@ function UpgradesUI:fillWithData(data)
         purchase.size = UDim2(1, 0, 0.2, 0)
         purchase.position = UDim2(0.5, 0, 0.8, 0)
         purchase.anchorPoint = Vector2(0.5, 0)
+
+        upgrades.purchase = purchase
     end
+end
+
+function UpgradesUI:chooseUpgrade(data, callback)
+    self:fillWithData(data)
+    self.visible = true
+
+    self.listeners = {}
+
+    for i, upgrade in ipairs(data.upgrades) do
+        table.insert(self.listeners, upgrade.purchase.mouseDown:connect(function()
+            for _, listner in ipairs(self.listeners) do
+                listner:disconnect()
+            end
+
+            callback(upgrade)
+        end))
+    end
+end
+
+function UpgradesUI:cancelChoosingUpgrade()
+    for _, listner in ipairs(self.listeners) do
+        listner:disconnect()
+    end
+
+    self.visible = false
 end
 
 return UpgradesUI

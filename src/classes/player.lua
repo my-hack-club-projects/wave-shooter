@@ -20,6 +20,7 @@ function Player:init(props)
 
     self.shotTypes = {}
 
+    self.maxUpgradeTier = 3
     self.upgrades = {
         sniper = {
             name = "Sniper",
@@ -93,6 +94,7 @@ function Player:init(props)
                         name = "machineGun"
                     }
 
+                    print("Inserting")
                     table.insert(self.shotTypes, existing)
                 end
 
@@ -108,6 +110,10 @@ function Player:init(props)
 end
 
 function Player:chooseShotType(shotTypeName)
+    for _, v in pairs(self.shotTypes) do
+        v.selected = false
+    end
+
     local shotType = self.shotTypes[tablef.find(self.shotTypes, function(shotType)
         return shotType.name == shotTypeName
     end)]
@@ -115,6 +121,8 @@ function Player:chooseShotType(shotTypeName)
     if not shotType then
         return
     end
+
+    shotType.selected = true
 
     self.damage = shotType.damage
     self.bulletSpeed = shotType.speed
@@ -124,8 +132,24 @@ function Player:chooseShotType(shotTypeName)
     self.bulletCount = shotType.bulletCount
 end
 
+function Player:getRandomUpgrades(nUpgrades)
+    local upgrades = {}
+
+    for i = 1, nUpgrades do
+        local upgrade
+        repeat
+            upgrade = tablef.random(tablef.values(self.upgrades))
+        until not tablef.find(upgrades, function(u) return u.name == upgrade.name end)
+
+        table.insert(upgrades, upgrade)
+    end
+
+    return upgrades
+end
+
 function Player:upgrade(upgradeName)
-    local upgrade = self.upgrades[upgradeName]
+    print("Upgrading", upgradeName)
+    local upgrade = self.upgrades[tablef.find(self.upgrades, function(u) return u.name == upgradeName end)]
 
     if not upgrade then
         return

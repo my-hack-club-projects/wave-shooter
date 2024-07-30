@@ -8,6 +8,7 @@ local Player = require 'classes.player'
 local Enemy = require 'classes.enemy'
 
 local UpgradesUI = require 'game.states.Play.classes.upgradesui'
+local ShotTypeUI = require 'game.states.Play.classes.shottypeui'
 
 local function getRandomPositionForEnemy(self)
     local randAngle = math.random() * math.pi * 2
@@ -36,11 +37,14 @@ function PlayState:init(game)
     self.enemySpawnRadius = 50
     self.enemySpawnInterval = 1
     self.waveFinishedSpawning = true
-    self.intermissionDuration = 2
+    self.intermissionDuration = 10
 
     self.enemies = {}
 
     self.upgradesUI = UpgradesUI(self.game)
+    self.upgradesUI.visible = false
+
+    self.shotTypeUI = ShotTypeUI(self.game)
 end
 
 function PlayState:enter(prevState)
@@ -80,15 +84,34 @@ function PlayState:spawnEnemy()
         table.remove(self.enemies, me)
 
         if #self.enemies == 0 then
-            self.game:defer(self.intermissionDuration, function()
-                self:nextWave()
-            end)
+            self:intermission()
         end
     end)
 
     table.insert(self.enemies, {
         enemy = enemy,
     })
+end
+
+function PlayState:intermission()
+    -- Show upgrades UI
+    local randomUpgrades = self.player:getRandomUpgrades(3)
+
+    self.upgradesUI:chooseUpgrade({
+        upgrades = randomUpgrades,
+        maxTier = self.player.maxUpgradeTier,
+    }, function(upgrade)
+        print("Applying upgrade " .. upgrade.name)
+        self.player:upgrade(upgrade.name)
+
+        self.upgradesUI:cancelChoosingUpgrade()
+    end)
+
+    self.game:defer(self.intermissionDuration, function()
+        self.upgradesUI:cancelChoosingUpgrade()
+
+        self:nextWave()
+    end)
 end
 
 function PlayState:nextWave()
@@ -118,6 +141,14 @@ function PlayState:draw()
     State.draw(self)
 
     self.upgradesUI:draw()
+    self.shotTypeUI:draw()
+end
+
+function PlayState:update(dt)
+    State.update(self, dt)
+
+    self.upgradesUI:update()
+    self.shotTypeUI:update()
 end
 
 return PlayState

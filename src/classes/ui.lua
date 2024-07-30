@@ -1,4 +1,5 @@
 local oo = require 'libs.oo'
+local signal = require 'libs.signal'
 local Instance = require 'classes.instance'
 local Vector2 = require 'types.vector2'
 local UDim2 = require 'types.udim2'
@@ -14,6 +15,8 @@ function UI:init(game)
     self.game = game
     self.absoluteSize = Vector2(love.graphics.getDimensions())
     self.absolutePosition = Vector2(0, 0)
+
+    self.visible = true
 
     self.resizeListener = self.game.signals.resize:connect(function(width, height)
         self.absoluteSize = Vector2(width, height)
@@ -44,6 +47,10 @@ function UI:update()
 end
 
 function UI:draw()
+    if not self.visible then
+        return
+    end
+
     for i, child in ipairs(self.children) do
         child:draw()
     end
@@ -58,6 +65,50 @@ function UIElement:init()
     self.size = UDim2()
     self.anchorPoint = Vector2(0.5, 0.5)
     self.color = Color4()
+
+    self.mouseDown = signal.new()
+    self.mouseUp = signal.new()
+    self.mouseEnter = signal.new()
+    self.mouseLeave = signal.new()
+
+    self.mouseInside = false
+    self.mousePressed = false
+end
+
+function UIElement:update()
+    if not self.absolutePosition or not self.absoluteSize then
+        return
+    end
+
+    -- Handle mouse events
+    local mousePosition = Vector2(love.mouse.getPosition())
+    local x, y = self.absolutePosition.x, self.absolutePosition.y
+    local w, h = self.absoluteSize.x, self.absoluteSize.y
+
+    if mousePosition.x >= x and mousePosition.x <= x + w and
+        mousePosition.y >= y and mousePosition.y <= y + h then
+        if not self.mouseInside then
+            self.mouseInside = true
+            self.mouseEnter:dispatch()
+        end
+    else
+        if self.mouseInside then
+            self.mouseInside = false
+            self.mouseLeave:dispatch()
+        end
+    end
+
+    if love.mouse.isDown(1) and self.mouseInside and not self.mousePressed then
+        self.mousePressed = true
+        self.mouseDown:dispatch()
+    elseif not love.mouse.isDown(1) and self.mouseInside and self.mousePressed then
+        self.mouseUp:dispatch()
+    end
+
+    -- Update children
+    for i, child in ipairs(self.children) do
+        child:update()
+    end
 end
 
 function UIElement:drawElement()
