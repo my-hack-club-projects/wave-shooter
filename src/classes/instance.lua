@@ -23,4 +23,20 @@ function Instance:removeChild(child)
     end
 end
 
+function Instance:findFirstChild(name)
+    for i, child in ipairs(self.children) do
+        if child.name == name then
+            return child
+        end
+    end
+end
+
+function Instance:getChildren()
+    return self.children
+end
+
+function Instance:clearAllChildren()
+    self.children = {}
+end
+
 return Instance

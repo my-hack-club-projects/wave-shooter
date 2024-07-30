@@ -7,6 +7,8 @@ local Camera = require 'classes.camera'
 local Player = require 'classes.player'
 local Enemy = require 'classes.enemy'
 
+local UpgradesUI = require 'game.states.Play.classes.upgradesui'
+
 local function getRandomPositionForEnemy(self)
     local randAngle = math.random() * math.pi * 2
     local randRadius = self.enemySpawnRadius + math.random() * (self.enemySpawnRadius - self.mapRadius)
@@ -37,6 +39,8 @@ function PlayState:init(game)
     self.intermissionDuration = 2
 
     self.enemies = {}
+
+    self.upgradesUI = UpgradesUI(self.game)
 end
 
 function PlayState:enter(prevState)
@@ -108,6 +112,12 @@ function PlayState:nextWave()
             end
         end)
     end
+end
+
+function PlayState:draw()
+    State.draw(self)
+
+    self.upgradesUI:draw()
 end
 
 return PlayState

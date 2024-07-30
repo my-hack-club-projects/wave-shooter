@@ -61,7 +61,7 @@ function UIElement:init()
 end
 
 function UIElement:drawElement()
-    love.graphics.rectangle("outline", 0, 0, self.absoluteSize.x, self.absoluteSize.y)
+    love.graphics.rectangle("line", 0, 0, self.absoluteSize.x, self.absoluteSize.y)
 end
 
 function UIElement:draw()
@@ -69,13 +69,13 @@ function UIElement:draw()
     local parentAbsoluteSize = parent and parent.absoluteSize or Vector2(love.graphics.getDimensions())
     local parentAbsolutePosition = parent and parent.absolutePosition or Vector2(0, 0)
 
-    local x = parentAbsolutePosition.x + parentAbsoluteSize.x * self.position.x.scale + self.position.x.offset -
-        self.size.x.scale * self.anchorPoint.x
-    local y = parentAbsolutePosition.y + parentAbsoluteSize.y * self.position.y.scale + self.position.y.offset -
-        self.size.y.scale * self.anchorPoint.y
-
     local w = parentAbsoluteSize.x * self.size.x.scale + self.size.x.offset
     local h = parentAbsoluteSize.y * self.size.y.scale + self.size.y.offset
+
+    local x = parentAbsolutePosition.x + parentAbsoluteSize.x * self.position.x.scale + self.position.x.offset -
+        w * self.anchorPoint.x
+    local y = parentAbsolutePosition.y + parentAbsoluteSize.y * self.position.y.scale + self.position.y.offset -
+        h * self.anchorPoint.y
 
     self.absolutePosition = Vector2(x, y)
     self.absoluteSize = Vector2(w, h)
@@ -104,8 +104,43 @@ function Frame:drawElement()
     love.graphics.rectangle("fill", 0, 0, self.absoluteSize.x, self.absoluteSize.y)
 end
 
+local Text = oo.class(UIElement)
+
+function Text:init()
+    UIElement.init(self)
+
+    self.text = ""
+    self.font = love.graphics.newFont(12)
+
+    self.textColor = Color4(0, 0, 0, 1)
+end
+
+function Text:setFont(font)
+    if type(font) == "number" then
+        font = love.graphics.newFont(font)
+    end
+
+    self.font = font
+end
+
+function Text:drawElement()
+    -- Draw  the BG element
+    UIElement.drawElement(self)
+
+    -- Draw the text (centered, must NOT get out of bounds of the element)
+    local font = self.font
+    local text = self.text
+    local x = self.absoluteSize.x / 2 - font:getWidth(text) / 2
+    local y = self.absoluteSize.y / 2 - font:getHeight() / 2
+
+    love.graphics.setFont(font)
+    love.graphics.setColor(self.textColor:unpack())
+    love.graphics.printf(text, 0, self.absoluteSize.y / 2 - font:getHeight() / 2, self.absoluteSize.x, "center")
+end
+
 return {
     UI = UI,
     UIElement = UIElement,
     Frame = Frame,
+    Text = Text
 }
