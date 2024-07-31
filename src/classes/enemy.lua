@@ -58,10 +58,6 @@ function Enemy:update(dt)
     Character.update(self, dt)
 
     for _, bullet in ipairs(self.bullets) do
-        if not bullet.alive then
-            table.remove(self.bullets, tablef.find(self.bullets, function(b) return b == bullet end))
-        end
-
         bullet:checkCollision(self.targets)
     end
 end

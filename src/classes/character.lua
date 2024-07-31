@@ -255,7 +255,7 @@ function Character:update(dt)
 
     for i, bullet in ipairs(self.bullets) do
         bullet:update(dt)
-        if bullet.dead then
+        if not bullet.alive then
             table.remove(self.bullets, i)
         end
     end

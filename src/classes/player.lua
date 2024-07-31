@@ -29,23 +29,6 @@ function Player:getDirection()
 end
 
 function Player:fire()
-    -- Implement bullet count - how many bullets at once. When 1, fire straight ahead, when more, spread them out
-    -- table.insert(
-    --     self.bullets,
-    --     self.game.current.entity.new(
-    --         Bullet,
-    --         {
-    --             position = self.position,
-    --             rotation = self.rotation,
-    --             direction = self.aimDirection,
-    --             randomness = ((1 - self.accuracy) * self.InaccurateRange),
-    --             speed = self.bulletSpeed,
-    --             damage = self.damage,
-    --             lifeDuration = self.bulletLifeDuration,
-    --         }
-    --     )
-    -- )
-
     for i = 1, self.bulletCount do
         local angle = self.rotation + (i - 1 - self.bulletCount / 2) * (self.bulletCount > 1 and self.spreadAngle or 0)
         local direction = Vector2(math.cos(angle), math.sin(angle))
@@ -103,10 +86,6 @@ function Player:update(dt)
     end
 
     for _, bullet in ipairs(self.bullets) do
-        if not bullet.alive then
-            table.remove(self.bullets, tablef.find(self.bullets, function(b) return b == bullet end))
-        end
-
         bullet:checkCollision(allEnemies)
     end
 
