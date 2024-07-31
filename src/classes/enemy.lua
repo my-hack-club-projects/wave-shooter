@@ -18,6 +18,20 @@ function Enemy:init(props)
     self.targets = props.targets or { self.game.current.entity.find("Player") }
     self.targetDirection = Vector2()
     self.target = self.targets[1]
+
+    self.shotTypes = {
+        {
+            name = "Default",
+            damage = 10,
+            speed = 10,
+            firerate = 3,
+            accuracy = 0.6,
+            lifeDuration = 3,
+            bulletCount = 1,
+        }
+    }
+
+    self:chooseShotType("Default")
 end
 
 function Enemy:getTarget()
@@ -60,22 +74,16 @@ function Enemy:update(dt)
     for _, bullet in ipairs(self.bullets) do
         bullet:checkCollision(self.targets)
     end
+
+    self:fire()
 end
 
 function Enemy:fire()
-    -- table.insert(
-    --     self.bullets,
-    --     self.game.current.entity.new(
-    --         Bullet,
-    --         {
-    --             position = self.position,
-    --             rotation = self.rotation,
-    --             direction = self.targetDirection,
-    --             speed = 10,
-    --             damage = 1
-    --         }
-    --     )
-    -- )
+    if love.timer.getTime() - self.lastFired > 1 / self.fireRate then
+        self.lastFired = love.timer.getTime()
+
+        Character.fire(self)
+    end
 end
 
 return Enemy

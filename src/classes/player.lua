@@ -28,29 +28,6 @@ function Player:getDirection()
     )
 end
 
-function Player:fire()
-    for i = 1, self.bulletCount do
-        local angle = self.rotation + (i - 1 - self.bulletCount / 2) * (self.bulletCount > 1 and self.spreadAngle or 0)
-        local direction = Vector2(math.cos(angle), math.sin(angle))
-
-        table.insert(
-            self.bullets,
-            self.game.current.entity.new(
-                Bullet,
-                {
-                    position = self.position,
-                    rotation = angle,
-                    direction = direction,
-                    randomness = ((1 - self.accuracy) * self.InaccurateRange),
-                    speed = self.bulletSpeed,
-                    damage = self.damage,
-                    lifeDuration = self.bulletLifeDuration,
-                }
-            )
-        )
-    end
-end
-
 function Player:updateCamera()
     -- TODO: Move the camera to the player smoothly
 end

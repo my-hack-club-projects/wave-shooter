@@ -5,6 +5,7 @@ local Vector2 = require 'types.vector2'
 local Signal = require 'libs.signal'
 
 local Entity = require 'classes.entity'
+local Bullet = require 'classes.bullet'
 local Character = oo.class(Entity)
 
 Character.InaccurateRange = 90
@@ -136,6 +137,8 @@ function Character:init(props)
         },
     }
 
+    self.Upgrades = tablef.copy(Character.Upgrades)
+
     self.signals = {
         died = Signal(),
     }
@@ -154,7 +157,27 @@ function Character:getDirection()
 end
 
 function Character:fire()
-    error("Subclasses must implement this method")
+    for i = 1, self.bulletCount do
+        local angle = self.rotation + (i - 1 - self.bulletCount / 2) * (self.bulletCount > 1 and self.spreadAngle or 0)
+        local direction = Vector2(math.cos(angle), math.sin(angle))
+
+        table.insert(
+            self.bullets,
+            self.game.current.entity.new(
+                Bullet,
+                {
+                    firedBy = self,
+                    position = self.position,
+                    rotation = angle,
+                    direction = direction,
+                    randomness = ((1 - self.accuracy) * self.InaccurateRange),
+                    speed = self.bulletSpeed,
+                    damage = self.damage,
+                    lifeDuration = self.bulletLifeDuration,
+                }
+            )
+        )
+    end
 end
 
 function Character:chooseShotType(shotTypeName)

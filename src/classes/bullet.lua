@@ -11,6 +11,7 @@ function Bullet:init(props)
     assert(props.direction, "Bullet needs a direction")
 
     self.name = "Bullet"
+    self.firedBy = props.firedBy
     self.size = Vector2(0.4, 0.4)
     self.damage = props.damage or 1
     self.randomness = props.randomness or 0
@@ -48,6 +49,22 @@ function Bullet:checkCollision(characters)
     for _, character in ipairs(characters) do
         if self.game.physics.aabb(self.position, self.size, character.position, character.size) then
             character:takeDamage(self.damage)
+            self.alive = false
+            self:destroy()
+        end
+    end
+
+    -- find other bullets
+    local function radiusCollision(pos1, radius1, pos2, radius2)
+        return (pos1 - pos2).magnitude < radius1 + radius2
+    end
+
+    local bullets = self.game.current.entity.findAll("Bullet")
+
+    for _, bullet in ipairs(bullets) do
+        if bullet.firedBy ~= self.firedBy and radiusCollision(self.position, self.size.x, bullet.position, bullet.size.x) then
+            bullet.alive = false
+            bullet:destroy()
             self.alive = false
             self:destroy()
         end

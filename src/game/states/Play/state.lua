@@ -61,7 +61,7 @@ function PlayState:enter(prevState)
     )
 
     self.player.signals.died:once(function()
-        self.game:changeState("GameOverState", self.data)
+        self.game:setState("GameOverState", self.data)
     end)
 
     self.listeners = {
