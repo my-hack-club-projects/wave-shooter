@@ -27,6 +27,10 @@ function Bullet:init(props)
 end
 
 function Bullet:update(dt)
+    if not self.alive then
+        return
+    end
+
     self.position = self.position + self.direction * self.speed * dt
     self.lifeDuration = self.lifeDuration - dt
 
@@ -37,6 +41,10 @@ function Bullet:update(dt)
 end
 
 function Bullet:checkCollision(characters)
+    if not self.alive then
+        return
+    end
+
     for _, character in ipairs(characters) do
         if self.game.physics.aabb(self.position, self.size, character.position, character.size) then
             character:takeDamage(self.damage)

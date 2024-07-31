@@ -72,50 +72,10 @@ function UIElement:init()
     self.mouseLeave = signal.new()
 
     self.mouseInside = false
-    self.mousePressed = false
+    self.mousePressed = true -- So that the first frame doesn't trigger the mouseDown event
 end
 
-function UIElement:update()
-    if not self.absolutePosition or not self.absoluteSize then
-        return
-    end
-
-    -- Handle mouse events
-    local mousePosition = Vector2(love.mouse.getPosition())
-    local x, y = self.absolutePosition.x, self.absolutePosition.y
-    local w, h = self.absoluteSize.x, self.absoluteSize.y
-
-    if mousePosition.x >= x and mousePosition.x <= x + w and
-        mousePosition.y >= y and mousePosition.y <= y + h then
-        if not self.mouseInside then
-            self.mouseInside = true
-            self.mouseEnter:dispatch()
-        end
-    else
-        if self.mouseInside then
-            self.mouseInside = false
-            self.mouseLeave:dispatch()
-        end
-    end
-
-    if love.mouse.isDown(1) and self.mouseInside and not self.mousePressed then
-        self.mousePressed = true
-        self.mouseDown:dispatch()
-    elseif not love.mouse.isDown(1) and self.mouseInside and self.mousePressed then
-        self.mouseUp:dispatch()
-    end
-
-    -- Update children
-    for i, child in ipairs(self.children) do
-        child:update()
-    end
-end
-
-function UIElement:drawElement()
-    love.graphics.rectangle("line", 0, 0, self.absoluteSize.x, self.absoluteSize.y)
-end
-
-function UIElement:draw()
+function UIElement:calculateAbs()
     local parent = self.parent
     local parentAbsoluteSize = parent and parent.absoluteSize or Vector2(love.graphics.getDimensions())
     local parentAbsolutePosition = parent and parent.absolutePosition or Vector2(0, 0)
@@ -130,10 +90,59 @@ function UIElement:draw()
 
     self.absolutePosition = Vector2(x, y)
     self.absoluteSize = Vector2(w, h)
+end
+
+function UIElement:update()
+    if not self.absoluteSize or not self.absolutePosition then
+        self:calculateAbs()
+    end
+
+    -- Handle mouse events
+    local mousePosition = Vector2(love.mouse.getPosition())
+    local x, y = self.absolutePosition.x, self.absolutePosition.y
+    local w, h = self.absoluteSize.x, self.absoluteSize.y
+
+    local inside = mousePosition.x >= x and mousePosition.x <= x + w and
+        mousePosition.y >= y and mousePosition.y <= y + h
+
+    if inside then
+        if not self.mouseInside then
+            self.mouseEnter:dispatch()
+        end
+    else
+        if self.mouseInside then
+            self.mouseLeave:dispatch()
+        end
+    end
+
+    self.mouseInside = inside
+
+    if love.mouse.isDown(1) and self.mouseInside and not self.mousePressed then
+        self.mouseDown:dispatch()
+    elseif not love.mouse.isDown(1) and self.mouseInside and self.mousePressed then
+        self.mouseUp:dispatch()
+    end
+
+    self.mousePressed = love.mouse.isDown(1)
+
+    -- Update children
+    for i, child in ipairs(self.children) do
+        child:update()
+    end
+end
+
+function UIElement:drawElement()
+    love.graphics.rectangle("line", 0, 0, self.absoluteSize.x, self.absoluteSize.y)
+end
+
+function UIElement:draw()
+    if not self.absoluteSize or not self.absolutePosition then
+        self:calculateAbs()
+    end
 
     love.graphics.push()
 
-    love.graphics.translate(x, y)
+    love.graphics.translate(self.absolutePosition.x, self.absolutePosition.y)
     love.graphics.setColor(self.color:unpack())
 
     self:drawElement()
@@ -161,6 +170,8 @@ function Text:init()
     UIElement.init(self)
 
     self.text = ""
+    self.textAlignX = "center"
+    self.textAlignY = "center"
     self.font = love.graphics.newFont(12)
 
     self.textColor = Color4(0, 0, 0, 1)
@@ -186,7 +197,16 @@ function Text:drawElement()
 
     love.graphics.setFont(font)
     love.graphics.setColor(self.textColor:unpack())
-    love.graphics.printf(text, 0, self.absoluteSize.y / 2 - font:getHeight() / 2, self.absoluteSize.x, "center")
+
+    if self.textAlignY == "top" then
+        y = 0
+    elseif self.textAlignY == "bottom" then
+        y = self.absoluteSize.y - font:getHeight()
+    else
+        y = self.absoluteSize.y / 2 - font:getHeight() / 2
+    end
+
+    love.graphics.printf(text, 0, y, self.absoluteSize.x, self.textAlignX or "center")
 end
 
 return {

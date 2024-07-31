@@ -3,7 +3,11 @@ local tablef = {}
 function tablef.copy(t)
     local new = {}
     for k, v in pairs(t) do
-        new[k] = v
+        if type(v) == 'table' then
+            new[k] = tablef.copy(v)
+        else
+            new[k] = v
+        end
     end
     return new
 end
@@ -29,24 +33,34 @@ function tablef.find(t, f)
     end
 end
 
-function tablef.eq(t1, t2)
-    local t1keys = {}
-    for k, v in pairs(t1) do
-        t1keys[k] = true
-    end
+function tablef.eq(o1, o2, ignore_mt)
+    if o1 == o2 then return true end
+    local o1Type = type(o1)
+    local o2Type = type(o2)
+    if o1Type ~= o2Type then return false end
+    if o1Type ~= 'table' then return false end
 
-    for k, v in pairs(t2) do
-        if not t1keys[k] then
-            return false
+    if not ignore_mt then
+        local mt1 = getmetatable(o1)
+        if mt1 and mt1.__eq then
+            --compare using built in method
+            return o1 == o2
         end
     end
 
-    for k, v in pairs(t1) do
-        if t1[k] ~= t2[k] then
+    local keySet = {}
+
+    for key1, value1 in pairs(o1) do
+        local value2 = o2[key1]
+        if value2 == nil or tablef.eq(value1, value2, ignore_mt) == false then
             return false
         end
+        keySet[key1] = true
     end
 
+    for key2, _ in pairs(o2) do
+        if not keySet[key2] then return false end
+    end
     return true
 end
 

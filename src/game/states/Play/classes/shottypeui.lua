@@ -14,7 +14,7 @@ function ShotTypeUI:init(game)
 
     local frame = self:addChild(Frame)
     frame.size = UDim2(0.25, 0, 0.5, 0)
-    frame.position = UDim2(1, 0, 1, 0)
+    frame.position = UDim2(1, -10, 1, -10)
     frame.anchorPoint = Vector2(1, 1)
     frame.color = Color4(0, 0, 0, 0)
     self.frame = frame
@@ -30,8 +30,7 @@ function ShotTypeUI:update()
     end
 
     if not tablef.eq(self.game.current.player.shotTypes, self.data) then
-        print("Changed")
-        self.data = self.game.current.player.shotTypes
+        self.data = tablef.copy(self.game.current.player.shotTypes)
         self:fillWithData(self.data)
     end
 end
@@ -50,8 +49,9 @@ function ShotTypeUI:fillWithData(data)
         local text = self.frame:addChild(Text)
         text:setFont(cellSize)
         text.color = Color4(0, 0, 0, 0)
-        text.textColor = Color4(1, 1, 1, 1)
+        text.textColor = shotType.selected and Color4(1, 1, 1, 1) or Color4(0.5, 0.5, 0.5, 1)
         text.text = shotType.name
+        text.textAlignX = 'right'
         text.size = size
         text.position = position
         text.anchorPoint = anchorPoint

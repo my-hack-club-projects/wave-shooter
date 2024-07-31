@@ -64,6 +64,12 @@ function PlayState:enter(prevState)
         self.game:changeState("GameOverState", self.data)
     end)
 
+    self.listeners = {
+        self.game.signals.wheelmoved:connect(function(x, y)
+            self.player:cycleShotType(y)
+        end),
+    }
+
     self:nextWave()
 end
 
@@ -94,6 +100,10 @@ function PlayState:spawnEnemy()
 end
 
 function PlayState:intermission()
+    if not self.waveFinishedSpawning then
+        return
+    end
+
     -- Show upgrades UI
     local randomUpgrades = self.player:getRandomUpgrades(3)
 
@@ -101,7 +111,6 @@ function PlayState:intermission()
         upgrades = randomUpgrades,
         maxTier = self.player.maxUpgradeTier,
     }, function(upgrade)
-        print("Applying upgrade " .. upgrade.name)
         self.player:upgrade(upgrade.name)
 
         self.upgradesUI:cancelChoosingUpgrade()
@@ -115,10 +124,6 @@ function PlayState:intermission()
 end
 
 function PlayState:nextWave()
-    if not self.waveFinishedSpawning then
-        return
-    end
-
     tablef.clear(self.enemies)
 
     self.data.wave = self.data.wave + 1

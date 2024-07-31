@@ -18,9 +18,20 @@ function Player:init(props)
 
     self.autoAimMagnitude = props.autoAimMagnitude or 1
 
-    self.shotTypes = {}
+    self.shotTypes = {
+        {
+            name = "Default",
+            damage = 10,
+            speed = 10,
+            firerate = 5,
+            accuracy = 0.85,
+            lifeDuration = 1,
+            bulletCount = 1,
+            selected = true,
+        }
+    }
 
-    self.maxUpgradeTier = 3
+    self.maxUpgradeTier = 5
     self.upgrades = {
         sniper = {
             name = "Sniper",
@@ -30,12 +41,12 @@ function Player:init(props)
             apply = function()
                 local upgrade = self.upgrades.sniper
                 local existing = self.shotTypes[tablef.find(self.shotTypes, function(shotType)
-                    return shotType.name == "sniper"
+                    return shotType.name == "Sniper"
                 end)]
 
                 if not existing then
                     existing = {
-                        name = "sniper"
+                        name = "Sniper"
                     }
 
                     table.insert(self.shotTypes, existing)
@@ -58,12 +69,12 @@ function Player:init(props)
             apply = function()
                 local upgrade = self.upgrades.shotgun
                 local existing = self.shotTypes[tablef.find(self.shotTypes, function(shotType)
-                    return shotType.name == "shotgun"
+                    return shotType.name == "Shotgun"
                 end)]
 
                 if not existing then
                     existing = {
-                        name = "shotgun"
+                        name = "Shotgun"
                     }
 
                     table.insert(self.shotTypes, existing)
@@ -73,8 +84,9 @@ function Player:init(props)
                 existing.speed = 10 + 2.5 * upgrade.tier
                 existing.firerate = 0.8 + 0.4 * upgrade.tier
                 existing.accuracy = 0.7
-                existing.lifeDuration = 10
-                existing.bulletCount = 5
+                existing.lifeDuration = 1 + 0.5 * upgrade.tier
+                existing.bulletCount = 5 + 2 * upgrade.tier
+                existing.spreadAngle = math.rad(5)
             end,
         },
 
@@ -86,15 +98,14 @@ function Player:init(props)
             apply = function()
                 local upgrade = self.upgrades.machineGun
                 local existing = self.shotTypes[tablef.find(self.shotTypes, function(shotType)
-                    return shotType.name == "machineGun"
+                    return shotType.name == "Machine Gun"
                 end)]
 
                 if not existing then
                     existing = {
-                        name = "machineGun"
+                        name = "Machine Gun"
                     }
 
-                    print("Inserting")
                     table.insert(self.shotTypes, existing)
                 end
 
@@ -107,6 +118,8 @@ function Player:init(props)
             end,
         },
     }
+
+    self:chooseShotType("Default")
 end
 
 function Player:chooseShotType(shotTypeName)
@@ -130,16 +143,38 @@ function Player:chooseShotType(shotTypeName)
     self.accuracy = mathf.clamp(shotType.accuracy, 0, 1)
     self.bulletLifeDuration = shotType.lifeDuration
     self.bulletCount = shotType.bulletCount
+    self.spreadAngle = shotType.spreadAngle
+end
+
+function Player:cycleShotType(n)
+    local currentIndex = tablef.find(self.shotTypes, function(shotType)
+        return shotType.selected
+    end)
+
+    local newIndex = (currentIndex + n - 1) % #self.shotTypes + 1
+
+    self:chooseShotType(self.shotTypes[newIndex].name)
 end
 
 function Player:getRandomUpgrades(nUpgrades)
     local upgrades = {}
 
     for i = 1, nUpgrades do
-        local upgrade
-        repeat
-            upgrade = tablef.random(tablef.values(self.upgrades))
-        until not tablef.find(upgrades, function(u) return u.name == upgrade.name end)
+        local availableUpgrades = {}
+        for _, upgrade in pairs(self.upgrades) do
+            if upgrade.tier < self.maxUpgradeTier and not tablef.find(upgrades, function(u)
+                    return u.name == upgrade
+                        .name
+                end) then
+                table.insert(availableUpgrades, upgrade)
+            end
+        end
+
+        if #availableUpgrades == 0 then
+            break
+        end
+
+        local upgrade = availableUpgrades[math.random(1, #availableUpgrades)]
 
         table.insert(upgrades, upgrade)
     end
@@ -148,7 +183,6 @@ function Player:getRandomUpgrades(nUpgrades)
 end
 
 function Player:upgrade(upgradeName)
-    print("Upgrading", upgradeName)
     local upgrade = self.upgrades[tablef.find(self.upgrades, function(u) return u.name == upgradeName end)]
 
     if not upgrade then
@@ -167,20 +201,43 @@ function Player:getDirection()
 end
 
 function Player:fire()
-    table.insert(
-        self.bullets,
-        self.game.current.entity.new(
-            Bullet,
-            {
-                position = self.position,
-                rotation = self.rotation,
-                direction = self.aimDirection,
-                randomness = ((1 - self.accuracy) * self.InaccurateRange),
-                speed = self.bulletSpeed,
-                damage = self.damage,
-            }
+    -- Implement bullet count - how many bullets at once. When 1, fire straight ahead, when more, spread them out
+    -- table.insert(
+    --     self.bullets,
+    --     self.game.current.entity.new(
+    --         Bullet,
+    --         {
+    --             position = self.position,
+    --             rotation = self.rotation,
+    --             direction = self.aimDirection,
+    --             randomness = ((1 - self.accuracy) * self.InaccurateRange),
+    --             speed = self.bulletSpeed,
+    --             damage = self.damage,
+    --             lifeDuration = self.bulletLifeDuration,
+    --         }
+    --     )
+    -- )
+
+    for i = 1, self.bulletCount do
+        local angle = self.rotation + (i - 1 - self.bulletCount / 2) * (self.bulletCount > 1 and self.spreadAngle or 0)
+        local direction = Vector2(math.cos(angle), math.sin(angle))
+
+        table.insert(
+            self.bullets,
+            self.game.current.entity.new(
+                Bullet,
+                {
+                    position = self.position,
+                    rotation = angle,
+                    direction = direction,
+                    randomness = ((1 - self.accuracy) * self.InaccurateRange),
+                    speed = self.bulletSpeed,
+                    damage = self.damage,
+                    lifeDuration = self.bulletLifeDuration,
+                }
+            )
         )
-    )
+    end
 end
 
 function Player:updateCamera()
@@ -218,6 +275,10 @@ function Player:update(dt)
     end
 
     for _, bullet in ipairs(self.bullets) do
+        if not bullet.alive then
+            table.remove(self.bullets, tablef.find(self.bullets, function(b) return b == bullet end))
+        end
+
         bullet:checkCollision(allEnemies)
     end
 
