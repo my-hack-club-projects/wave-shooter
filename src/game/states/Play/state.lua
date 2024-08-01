@@ -2,17 +2,20 @@ local oo = require 'libs.oo'
 local tablef = require 'classes.tablef'
 local State = require 'classes.state'
 local Vector2 = require 'types.vector2'
+local Color4 = require 'types.color4'
 
 local Camera = require 'classes.camera'
 local Player = require 'classes.player'
 local Enemy = require 'classes.enemy'
+
+local Boundary = require 'game.states.Play.classes.boundary'
 
 local UpgradesUI = require 'game.states.Play.classes.upgradesui'
 local ShotTypeUI = require 'game.states.Play.classes.shottypeui'
 
 local function getRandomPositionForEnemy(self)
     local randAngle = math.random() * math.pi * 2
-    local randRadius = self.enemySpawnRadius + math.random() * (self.enemySpawnRadius - self.mapRadius)
+    local randRadius = math.random() * self.enemySpawnRadius
 
     return Vector2(
         math.cos(randAngle) * randRadius,
@@ -33,8 +36,8 @@ function PlayState:init(game)
     self.name = "PlayState"
     self.camera = Camera(self.game)
 
-    self.mapRadius = 100
-    self.enemySpawnRadius = 50
+    self.mapRadius = 50
+    self.enemySpawnRadius = self.mapRadius * 0.8
     self.enemySpawnInterval = 1
     self.waveFinishedSpawning = true
     self.intermissionDuration = 10
@@ -49,6 +52,15 @@ end
 
 function PlayState:enter(prevState)
     State.enter(self, prevState)
+
+    self.boundary = self.entity.new(
+        Boundary,
+        {
+            position = Vector2(0, 0),
+            radius = self.mapRadius,
+            color = Color4(1, 1, 1, 1),
+        }
+    )
 
     self.player = self.entity.new(
         Player,
@@ -67,6 +79,16 @@ function PlayState:enter(prevState)
     self.listeners = {
         self.game.signals.wheelmoved:connect(function(x, y)
             self.player:cycleShotType(y)
+        end),
+
+        self.boundary.entityExited:connect(function(entity)
+            if entity == self.player then
+                entity:takeDamage(love.timer.getDelta() * 50)
+            elseif entity.name == "Bullet" then
+                entity:destroy()
+            elseif entity.name == "Enemy" then
+                entity:takeDamage(entity.health)
+            end
         end),
     }
 

@@ -28,8 +28,16 @@ function Player:getDirection()
     )
 end
 
-function Player:updateCamera()
-    -- TODO: Move the camera to the player smoothly
+function Player:updateCamera(dt)
+    local cameraPosition = self.camera.position
+    local playerPosition = self.position
+
+    local distance = (playerPosition - cameraPosition).magnitude
+    local direction = distance > 0 and (playerPosition - cameraPosition).unit or Vector2(0, 0)
+
+    local speed = (distance ^ 2) / 2 -- Quadratic easing
+
+    self.camera.position = cameraPosition + direction * speed * dt
 end
 
 function Player:update(dt)
@@ -66,7 +74,7 @@ function Player:update(dt)
         bullet:checkCollision(allEnemies)
     end
 
-    self:updateCamera()
+    self:updateCamera(dt)
 end
 
 return Player

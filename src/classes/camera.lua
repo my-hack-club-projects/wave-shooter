@@ -94,22 +94,6 @@ function Camera:isPointVisible(x, y)
     return rotatedX > -halfWidth and rotatedX < halfWidth and rotatedY > -halfHeight and rotatedY < halfHeight
 end
 
-function Camera:worldToScreen(x, y)
-    -- x, y are in world coordinates. Returns x, y in screen coordinates
-    -- takes into account camera position, scale (getFovScale) and rotation
-
-    local halfWidth = love.graphics.getWidth() / 2
-    local halfHeight = love.graphics.getHeight() / 2
-
-    local rotatedX = math.cos(self.rotation) * (x - self.position.x) - math.sin(self.rotation) * (y - self.position.y) +
-        self.position.x
-    local rotatedY = math.sin(self.rotation) * (x - self.position.x) + math.cos(self.rotation) * (y - self.position.y) +
-        self.position.y
-
-    return rotatedX * self.game.UnitSize * self:getFovScale() + halfWidth,
-        rotatedY * self.game.UnitSize * self:getFovScale() + halfHeight
-end
-
 function Camera:screenToWorld(x, y)
     -- x, y are in screen coordinates. Returns x, y in world coordinates
     -- takes into account camera position, scale (getFovScale) and rotation
@@ -117,17 +101,29 @@ function Camera:screenToWorld(x, y)
     local halfWidth = love.graphics.getWidth() / 2
     local halfHeight = love.graphics.getHeight() / 2
 
-    local rotatedX = (x - halfWidth) / (self.game.UnitSize * self:getFovScale())
-    local rotatedY = (y - halfHeight) / (self.game.UnitSize * self:getFovScale())
+    local rotatedX = (x - halfWidth) / self.game.UnitSize / self:getFovScale()
+    local rotatedY = (y - halfHeight) / self.game.UnitSize / self:getFovScale()
 
-    local worldX = math.cos(-self.rotation) * (rotatedX - self.position.x) -
-        math.sin(-self.rotation) * (rotatedY - self.position.y) +
-        self.position.x
-    local worldY = math.sin(-self.rotation) * (rotatedX - self.position.x) +
-        math.cos(-self.rotation) * (rotatedY - self.position.y) +
-        self.position.y
+    local worldX = math.cos(self.rotation) * rotatedX - math.sin(self.rotation) * rotatedY + self.position.x
+    local worldY = math.sin(self.rotation) * rotatedX + math.cos(self.rotation) * rotatedY + self.position.y
 
     return worldX, worldY
+end
+
+function Camera:worldToScreen(x, y)
+    -- x, y are in world coordinates. Returns x, y in screen coordinates
+    -- takes into account camera position, scale (getFovScale) and rotation
+
+    local halfWidth = love.graphics.getWidth() / 2
+    local halfHeight = love.graphics.getHeight() / 2
+
+    local rotatedX = math.cos(-self.rotation) * (x - self.position.x) - math.sin(-self.rotation) * (y - self.position.y)
+    local rotatedY = math.sin(-self.rotation) * (x - self.position.x) + math.cos(-self.rotation) * (y - self.position.y)
+
+    local screenX = rotatedX * self.game.UnitSize * self:getFovScale() + halfWidth
+    local screenY = rotatedY * self.game.UnitSize * self:getFovScale() + halfHeight
+
+    return screenX, screenY
 end
 
 return Camera

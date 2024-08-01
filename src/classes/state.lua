@@ -68,6 +68,10 @@ function State:init(game)
                 end
             end
         end,
+
+        getAll = function()
+            return self._entities
+        end
     }
 
     self._entities = {}
