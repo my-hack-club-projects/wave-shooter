@@ -16,7 +16,11 @@ end
 function mathf.approach(current, target, maxDelta)
     assert(current and target and maxDelta, "All arguments must be provided")
 
-    return current + mathf.clamp(target - current, -maxDelta, maxDelta)
+    if type(current) == "number" and type(target) == "number" then
+        return current + mathf.clamp(target - current, -maxDelta, maxDelta)
+    else
+        return current + (target - current):clamp(-maxDelta, maxDelta)
+    end
 end
 
 function mathf.round(value)

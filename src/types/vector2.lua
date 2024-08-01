@@ -45,6 +45,10 @@ function Vector2:dot(other)
     return self.x * other.x + self.y * other.y
 end
 
+function Vector2:clamp(min, max)
+    return Vector2(math.min(math.max(self.x, min), max), math.min(math.max(self.y, min), max))
+end
+
 function Vector2:__eq(other)
     return self.x == other.x and self.y == other.y
 end

@@ -1,8 +1,13 @@
 local oo = require 'libs.oo'
+local import = require 'classes.import'
 local mathf = require 'classes.mathf'
 local tablef = require 'classes.tablef'
 local Vector2 = require 'types.vector2'
+local UDim2 = require 'types.udim2'
+local Color4 = require 'types.color4'
 local Signal = require 'libs.signal'
+
+local WorldUI, Frame = import({ 'WorldUI', 'Frame' }, 'classes.ui')
 
 local Entity = require 'classes.entity'
 local Bullet = require 'classes.bullet'
@@ -108,6 +113,7 @@ function Character:init(props)
 
     self.name = "Character"
     self.health = props.health or 100
+    self.maxHealth = props.maxHealth or 100
     self.speed = props.speed or 1
     self.acceleration = props.acceleration or 1
     self.drag = props.drag or 1
@@ -142,6 +148,28 @@ function Character:init(props)
     self.signals = {
         died = Signal(),
     }
+
+    self.healthbarUI = WorldUI(self.game)
+    self.healthbarUI.size = Vector2(3, 0.4)
+    self.healthbarUI.position = Vector2(0, 0)
+
+    local frame = self.healthbarUI:addChild(Frame)
+    frame.size = UDim2(1, 0, 1, 0)
+    frame.position = UDim2(0, 0, 0, 0)
+    frame.anchorPoint = Vector2(0, 0)
+    frame.color = Color4(1, 0, 0, 1)
+
+    local container = frame:addChild(Frame)
+    container.size = UDim2(1, -6, 1, -6)
+    container.position = UDim2(0.5, 0, 0.5, 0)
+    container.anchorPoint = Vector2(0.5, 0.5)
+    container.color = Color4(0, 0, 0, 0)
+
+    self.healthbar = container:addChild(Frame)
+    self.healthbar.size = UDim2(1, 0, 1, 0)
+    self.healthbar.position = UDim2(0, 0, 0.5, 0)
+    self.healthbar.anchorPoint = Vector2(0, 0.5)
+    self.healthbar.color = Color4(0, 1, 0, 1)
 end
 
 function Character:takeDamage(damage)
@@ -282,6 +310,21 @@ function Character:update(dt)
             table.remove(self.bullets, i)
         end
     end
+
+    -- Update the healthbar
+    self.healthbarUI.position = Vector2(
+        self.position.x - self.healthbarUI.size.x / 2,
+        self.position.y - self.size.y / 2 - 1
+    )
+    self.healthbar.size = UDim2(mathf.clamp(self.health / self.maxHealth, 0, 1), 0, 1, 0)
+
+    self.healthbarUI:update(dt)
+end
+
+function Character:draw()
+    Entity.draw(self)
+
+    self.healthbarUI:draw()
 end
 
 return Character

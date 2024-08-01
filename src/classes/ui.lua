@@ -56,6 +56,26 @@ function UI:draw()
     end
 end
 
+local WorldUI = oo.class(UI)
+
+function WorldUI:init(game)
+    UI.init(self, game)
+
+    self.resizeListener:disconnect()
+
+    self.position = Vector2(0, 0)
+    self.size = Vector2(1, 1)
+end
+
+function WorldUI:update()
+    local unitSize = self.game.UnitSize
+
+    self.absoluteSize = self.size * unitSize
+    self.absolutePosition = self.position * unitSize
+
+    UI.update(self)
+end
+
 local UIElement = oo.class(Instance)
 
 function UIElement:init()
@@ -93,9 +113,7 @@ function UIElement:calculateAbs()
 end
 
 function UIElement:update()
-    if not self.absoluteSize or not self.absolutePosition then
-        self:calculateAbs()
-    end
+    self:calculateAbs()
 
     -- Handle mouse events
     local mousePosition = Vector2(love.mouse.getPosition())
@@ -211,6 +229,7 @@ end
 
 return {
     UI = UI,
+    WorldUI = WorldUI,
     UIElement = UIElement,
     Frame = Frame,
     Text = Text
