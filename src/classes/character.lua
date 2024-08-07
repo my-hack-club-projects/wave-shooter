@@ -112,8 +112,11 @@ function Character:init(props)
     self.size = Vector2(1, 1)
 
     self.name = "Character"
+
     self.health = props.health or 100
     self.maxHealth = props.maxHealth or 100
+    self.healSpeed = 1
+
     self.speed = props.speed or 1
     self.acceleration = props.acceleration or 1
     self.drag = props.drag or 1
@@ -309,6 +312,11 @@ function Character:update(dt)
         if not bullet.alive then
             table.remove(self.bullets, i)
         end
+    end
+
+    -- Heal
+    if self.health < self.maxHealth then
+        self.health = self.health + math.min(self.healSpeed * dt, self.maxHealth - self.health)
     end
 
     -- Update the healthbar
