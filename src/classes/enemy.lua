@@ -1,5 +1,4 @@
 local oo = require 'libs.oo'
-local inspect = require 'libs.inspect'
 local tablef = require 'classes.tablef'
 local Vector2 = require 'types.vector2'
 local Character = require 'classes.character'
@@ -70,7 +69,6 @@ Enemy.Presets = {
         shotType.lifeDuration = 2 + strengthRatio * 2
         shotType.bulletCount = math.floor(5 + strengthRatio * 15)
         shotType.spreadAngle = math.rad(6 - strengthRatio)
-        print(shotType.bulletCount, shotType.spreadAngle)
     end,
 }
 
@@ -99,11 +97,7 @@ function Enemy:init(props)
         }
     }
 
-    -- self.Presets[math.random(1, #self.Presets)](self)
-    self.Presets[2](self)
-
-    print("self:")
-    print(inspect(self))
+    self.Presets[math.random(1, #self.Presets)](self)
 
     self:chooseShotType("Default")
 end
