@@ -23,6 +23,14 @@ local function getRandomPositionForEnemy(self)
     )
 end
 
+local function getEnemyStrength(self)
+    local wave = self.data.wave
+    local min, max = wave * 0.5, wave * 1.5
+
+    -- return math.random() * (max - min) + min
+    return 20
+end
+
 local PlayState = oo.class(State)
 
 function PlayState:init(game)
@@ -100,7 +108,8 @@ function PlayState:spawnEnemy()
         Enemy,
         {
             position = getRandomPositionForEnemy(self),
-            target = self.player
+            target = self.player,
+            strength = getEnemyStrength(self),
         }
     )
 

@@ -12,7 +12,7 @@ function Bullet:init(props)
 
     self.name = "Bullet"
     self.firedBy = props.firedBy
-    self.size = Vector2(0.4, 0.4)
+    self.size = props.size or Vector2(0.4, 0.4)
     self.damage = props.damage or 1
     self.randomness = props.randomness or 0
 

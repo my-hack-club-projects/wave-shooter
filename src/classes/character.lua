@@ -130,6 +130,7 @@ function Character:init(props)
     self.bulletSpeed = props.bulletSpeed or 10
     self.bulletLifeDuration = props.bulletLifeDuration or 10
     self.bulletCount = props.bulletCount or 1
+    self.bulletSize = props.bulletSize or Vector2(0.4, 0.4)
 
     self.bullets = {}
 
@@ -200,6 +201,7 @@ function Character:fire()
                     firedBy = self,
                     position = self.position,
                     rotation = angle,
+                    size = self.bulletSize,
                     direction = direction,
                     randomness = ((1 - self.accuracy) * self.InaccurateRange),
                     speed = self.bulletSpeed,
@@ -232,6 +234,7 @@ function Character:chooseShotType(shotTypeName)
     self.accuracy = mathf.clamp(shotType.accuracy, 0, 1)
     self.bulletLifeDuration = shotType.lifeDuration
     self.bulletCount = shotType.bulletCount
+    self.bulletSize = shotType.size or self.bulletSize
     self.spreadAngle = shotType.spreadAngle
 end
 
