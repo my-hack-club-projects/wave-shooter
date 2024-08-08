@@ -14,6 +14,7 @@ function Bullet:init(props)
     self.firedBy = props.firedBy
     self.size = props.size or Vector2(0.4, 0.4)
     self.damage = props.damage or 1
+    self.penetration = props.penetration or 0
     self.randomness = props.randomness or 0
 
     local randomAngle = math.atan2(props.direction.y, props.direction.x) +
@@ -62,11 +63,16 @@ function Bullet:checkCollision(characters)
     local bullets = self.game.current.entity.findAll("Bullet")
 
     for _, bullet in ipairs(bullets) do
-        if bullet.firedBy ~= self.firedBy and radiusCollision(self.position, self.size.x, bullet.position, bullet.size.x) then
+        if bullet.firedBy ~= self.firedBy and self.penetration >= bullet.penetration and radiusCollision(self.position, self.size.x, bullet.position, bullet.size.x) then
             bullet.alive = false
             bullet:destroy()
-            self.alive = false
-            self:destroy()
+
+            self.penetration = self.penetration - self.penetration
+
+            if self.penetration < 0 then
+                self.alive = false
+                self:destroy()
+            end
         end
     end
 end

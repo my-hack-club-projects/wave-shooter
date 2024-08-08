@@ -41,6 +41,8 @@ Character.Upgrades = {
             existing.accuracy = 1
             existing.lifeDuration = 20
             existing.bulletCount = 1
+            existing.size = Vector2(1.5, 0.2)
+            existing.penetration = 1 + upgrade.tier
         end,
     },
 
@@ -70,6 +72,8 @@ Character.Upgrades = {
             existing.lifeDuration = 1 + 0.5 * upgrade.tier
             existing.bulletCount = 5 + 2 * upgrade.tier
             existing.spreadAngle = math.rad(5)
+            existing.size = Vector2(0.3, 0.3)
+            existing.penetration = 1 + math.floor(upgrade.tier / 2)
         end,
     },
 
@@ -98,6 +102,8 @@ Character.Upgrades = {
             existing.accuracy = 0.8 + 0.05 * upgrade.tier
             existing.lifeDuration = 5
             existing.bulletCount = 1
+            existing.size = Vector2(0.3, 0.1)
+            existing.penetration = 0
         end,
     },
 }
@@ -121,6 +127,8 @@ function Character:init(props)
     self.acceleration = props.acceleration or 1
     self.drag = props.drag or 1
     self.velocity = Vector2()
+    self.velocityOffset = Vector2()
+    self.velocityOffsetDecay = 15
     self.mouseDirection = Vector2()
 
     self.lastFired = 0
@@ -131,6 +139,7 @@ function Character:init(props)
     self.bulletLifeDuration = props.bulletLifeDuration or 10
     self.bulletCount = props.bulletCount or 1
     self.bulletSize = props.bulletSize or Vector2(0.4, 0.4)
+    self.recoilModifier = props.recoilModifier or 1
 
     self.bullets = {}
 
@@ -143,6 +152,8 @@ function Character:init(props)
             accuracy = 0.85,
             lifeDuration = 1,
             bulletCount = 1,
+            size = Vector2(0.4, 0.4),
+            penetration = 0,
             selected = true,
         },
     }
@@ -189,6 +200,11 @@ function Character:getDirection()
 end
 
 function Character:fire()
+    local rotation = self.rotation
+    local direction = Vector2(math.cos(rotation), math.sin(rotation))
+    local frontFacePosition = self.position + direction * self.size.y / 2
+
+    local totalRecoil = 0
     for i = 1, self.bulletCount do
         local angle = self.rotation + (i - 1 - self.bulletCount / 2) * (self.bulletCount > 1 and self.spreadAngle or 0)
         local direction = Vector2(math.cos(angle), math.sin(angle))
@@ -199,7 +215,7 @@ function Character:fire()
                 Bullet,
                 {
                     firedBy = self,
-                    position = self.position,
+                    position = frontFacePosition,
                     rotation = angle,
                     size = self.bulletSize,
                     direction = direction,
@@ -207,10 +223,15 @@ function Character:fire()
                     speed = self.bulletSpeed,
                     damage = self.damage,
                     lifeDuration = self.bulletLifeDuration,
+                    penetration = self.penetration,
                 }
             )
         )
+
+        totalRecoil = totalRecoil + self.bulletSize.magnitude * self.bulletSpeed * self.recoilModifier
     end
+
+    self.velocityOffset = self.velocityOffset - direction * totalRecoil
 end
 
 function Character:chooseShotType(shotTypeName)
@@ -236,6 +257,7 @@ function Character:chooseShotType(shotTypeName)
     self.bulletCount = shotType.bulletCount
     self.bulletSize = shotType.size or self.bulletSize
     self.spreadAngle = shotType.spreadAngle
+    self.penetration = shotType.penetration
 end
 
 function Character:cycleShotType(n)
@@ -307,8 +329,10 @@ function Character:update(dt)
         self.velocity = velocityDirection * velocityMagnitude
     end
 
+    self.velocityOffset = self.velocityOffset * mathf.clamp(1 - self.velocityOffsetDecay * (self.size.magnitude / 2) * dt, 0, 1)
+
     -- Add the velocity to the player position
-    self.position = self.position + self.velocity * self.speed * dt
+    self.position = self.position + self.velocity * self.speed * dt + self.velocityOffset * dt
 
     for i, bullet in ipairs(self.bullets) do
         bullet:update(dt)
