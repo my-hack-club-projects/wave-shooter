@@ -7,6 +7,7 @@ local Color4 = require 'types.color4'
 local Camera = require 'classes.camera'
 local Player = require 'classes.player'
 local Enemy = require 'classes.enemy'
+local Entity = require 'classes.entity'
 
 local Boundary = require 'game.states.Play.classes.boundary'
 
@@ -55,6 +56,18 @@ function PlayState:init(game)
     self.upgradesUI.visible = false
 
     self.shotTypeUI = ShotTypeUI(self.game)
+
+    self.floorImage = self.entity.new(
+        Entity,
+        {
+            game = self.game,
+            position = Vector2(0, 0),
+            size = Vector2(self.mapRadius * 2, self.mapRadius * 2),
+            color = Color4.fromHex("#005F73"),
+            zindex = -1,
+            image = love.graphics.newImage("assets/images/floor.png"),
+        }
+    )
 end
 
 function PlayState:enter(prevState)

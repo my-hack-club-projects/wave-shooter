@@ -75,6 +75,9 @@ function Game:init()
     self:computeDimensionsUnit()
 
     self.signals.resize:connect(self.computeDimensionsUnit, self)
+
+    -- graphics (nearest neighbor)
+    love.graphics.setDefaultFilter("nearest", "nearest")
 end
 
 function Game:loadConfig(config)
