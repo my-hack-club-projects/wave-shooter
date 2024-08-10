@@ -28,6 +28,33 @@ function Deathscreen:init(game)
     self.statsFrame.style = "line"
     self.statsFrameTargetPosition = UDim2(0.5, 0, 0.5, 0)
 
+    self.createStatElement = function(name, value)
+        local frame = self.statsFrame:addChild(Frame)
+        frame.size = UDim2(1, 0, 0.2, 0)
+        frame.position = UDim2(0, 0, 0.2 * (#self.statsFrame.children - 1) + 0.05, 0)
+        frame.anchorPoint = Vector2(0, 0)
+        frame.color = Color4(0, 0, 0, 0)
+
+        local nameText = frame:addChild(Text)
+        nameText.position = UDim2(0, 0, 0, 0)
+        nameText.anchorPoint = Vector2(0, 0)
+        nameText.size = UDim2(0.5, 0, 1, 0)
+        nameText.text = name
+        nameText.size = UDim2(0.5, 0, 1, 0)
+        nameText:setFont(24)
+        nameText.color = Color4(0, 0, 0, 0)
+        nameText.textColor = Color4.fromHex("#FFFFFF")
+
+        local valueText = frame:addChild(Text)
+        valueText.position = UDim2(0.5, 0, 0, 0)
+        valueText.anchorPoint = Vector2(0, 0)
+        valueText.size = UDim2(0.5, 0, 1, 0)
+        valueText.text = value
+        valueText:setFont(24)
+        valueText.color = Color4(0, 0, 0, 0)
+        valueText.textColor = Color4.fromHex("#FFFFFF")
+    end
+
     self.retryButton = self.UI:addChild(Text)
     self.retryButton.color = Color4.fromHex("#EE9B00")
     self.retryButton.textColor = Color4.fromHex("#FFFFFF")
@@ -36,10 +63,17 @@ function Deathscreen:init(game)
     self.retryButton.size = UDim2(0.2, 0, 0.1, 0)
     self.retryButton.anchorPoint = Vector2(0.5, 0)
     self.retryButtonTargetPosition = UDim2(0.5, 0, 0.85, 0)
+
+    self.retryButton.mouseDown:connect(function()
+        self.game:setState("PlayState")
+    end)
 end
 
-function Deathscreen:enter(prevState)
-    State.enter(self, prevState)
+function Deathscreen:enter(prevState, data)
+    State.enter(self, prevState, data)
+
+    self.createStatElement("Score", data.score)
+    self.createStatElement("Wave", data.wave)
 
     self.youDiedText.position = UDim2(0.5, 0, 0.5, 0)
     self.statsFrame.position = UDim2(0.5, 0, 1, 1)
@@ -58,6 +92,17 @@ function Deathscreen:enter(prevState)
             self.retryButton:animate("anchorPoint", Vector2(0.5, 0), 0.5)
         end)
     end)
+end
+
+function Deathscreen:exit()
+    State.exit(self)
+
+    self.statsFrame:clearAllChildren()
+
+    self.youDiedText.position = UDim2(0.5, 0, 0.5, 0)
+    self.statsFrame.position = UDim2(0.5, 0, 1, 1)
+    self.statsFrame.anchorPoint = Vector2(0.5, 0)
+    self.retryButton.position = UDim2(0.5, 0, 1, 1)
 end
 
 function Deathscreen:update(dt)

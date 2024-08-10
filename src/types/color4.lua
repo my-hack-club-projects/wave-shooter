@@ -1,14 +1,15 @@
 local oo = require 'libs.oo'
 local mathf = require 'classes.mathf'
+local tablef = require 'classes.tablef'
 
 local Color4 = oo.class()
 
 local function colorOperation(color1, color2, operation)
     if type(color1) == 'number' then
-        color1 = Color4(color1, color1, color1, 1)
+        color1 = Color4(color1, color1, color1, color1)
     end
     if type(color2) == 'number' then
-        color2 = Color4(color2, color2, color2, 1)
+        color2 = Color4(color2, color2, color2, color2)
     end
 
     local t = {}
@@ -17,14 +18,14 @@ local function colorOperation(color1, color2, operation)
         t[i] = operation(color1.components[i] or 0, color2.components[i] or 0)
     end
 
-    return Color4(table.unpack(t))
+    return Color4(tablef.unpack(t))
 end
 
 function Color4:init(r, g, b, a)
     self.components = {}
 
     for i, v in ipairs({ r or 1, g or 1, b or 1, a or 1 }) do
-        self.components[i] = mathf.clamp(v, 0, 1)
+        self.components[i] = v
     end
 
     self.r = self.components[1]

@@ -15,6 +15,7 @@ local Boundary = require 'game.states.Play.classes.boundary'
 local UpgradesUI = require 'game.states.Play.classes.upgradesui'
 local ShotTypeUI = require 'game.states.Play.classes.shottypeui'
 local TextUI = require 'game.states.Play.classes.textui'
+local FadeUI = require 'game.states.Play.classes.fadeui'
 
 local function getRandomPositionForEnemy(self)
     local randAngle = math.random() * math.pi * 2
@@ -37,11 +38,6 @@ local PlayState = oo.class(State)
 
 function PlayState:init(game)
     State.init(self, game)
-
-    self.data = {
-        wave = 0,
-        score = 0,
-    }
 
     self.name = "PlayState"
     self.camera = Camera(self.game)
@@ -74,6 +70,15 @@ function PlayState:init(game)
         font = love.graphics.newFont("assets/fonts/PressStart2P-Regular.ttf", 20),
         textAlignX = "left",
     })
+end
+
+function PlayState:enter(prevState)
+    State.enter(self, prevState)
+
+    self.data = {
+        score = 0,
+        wave = 0,
+    }
 
     self.floorImage = self.entity.new(
         Entity,
@@ -86,10 +91,6 @@ function PlayState:init(game)
             image = love.graphics.newImage("assets/images/floor.png"),
         }
     )
-end
-
-function PlayState:enter(prevState)
-    State.enter(self, prevState)
 
     self.boundary = self.entity.new(
         Boundary,
@@ -111,7 +112,7 @@ function PlayState:enter(prevState)
     )
 
     self.player.signals.died:once(function()
-        self.game:setState("GameOverState", self.data)
+        self.game:setState("Deathscreen", { score = self.data.score, wave = self.data.wave })
     end)
 
     self.listeners = {
@@ -131,6 +132,17 @@ function PlayState:enter(prevState)
     }
 
     self:nextWave()
+
+    self.fadeUI = FadeUI(self.game)
+    self.fadeUI:fadeOut(1)
+end
+
+function PlayState:exit()
+    State.exit(self)
+
+    for _, listener in ipairs(self.listeners) do
+        listener:disconnect()
+    end
 end
 
 function PlayState:spawnEnemy()
@@ -212,6 +224,8 @@ function PlayState:draw()
     self.shotTypeUI:draw()
     self.waveCounter:draw()
     self.scoreCounter:draw()
+
+    self.fadeUI:draw()
 end
 
 function PlayState:update(dt)
@@ -221,6 +235,7 @@ function PlayState:update(dt)
     self.shotTypeUI:update()
     self.waveCounter:update()
     self.scoreCounter:update()
+    self.fadeUI:update(dt)
 end
 
 return PlayState

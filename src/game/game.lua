@@ -102,7 +102,7 @@ function Game:loadState(stateClass)
     self.states[state.name] = state
 end
 
-function Game:setState(name)
+function Game:setState(name, ...)
     assert(self.states[name], "State does not exist")
 
     if self.current then
@@ -113,7 +113,7 @@ function Game:setState(name)
 
     self.current = self.states[name]
     self.current.prevState = prev
-    self.current:enter(prev)
+    self.current:enter(prev, ...)
 end
 
 function Game:getState()

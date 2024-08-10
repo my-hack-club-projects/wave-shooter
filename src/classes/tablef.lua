@@ -1,4 +1,10 @@
+local _unpack = unpack or table.unpack
+
 local tablef = {}
+
+function tablef.unpack(t)
+    return _unpack(t)
+end
 
 function tablef.copy(t)
     local new = {}

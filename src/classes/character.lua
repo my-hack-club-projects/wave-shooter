@@ -176,7 +176,7 @@ function Character:init(props)
     frame.size = UDim2(1, 0, 1, 0)
     frame.position = UDim2(0, 0, 0, 0)
     frame.anchorPoint = Vector2(0, 0)
-    frame.color = Color4(1, 0, 0, 1)
+    frame.color = Color4.fromHex("#001219")
 
     local container = frame:addChild(Frame)
     container.size = UDim2(1, -6, 1, -6)
@@ -188,7 +188,7 @@ function Character:init(props)
     self.healthbar.size = UDim2(1, 0, 1, 0)
     self.healthbar.position = UDim2(0, 0, 0.5, 0)
     self.healthbar.anchorPoint = Vector2(0, 0.5)
-    self.healthbar.color = Color4(0, 1, 0, 1)
+    self.healthbar.color = Color4.fromHex("#AE2012")
 end
 
 function Character:takeDamage(damage)
