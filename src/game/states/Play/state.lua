@@ -62,16 +62,16 @@ function PlayState:init(game)
     self.waveCounter = TextUI(self.game, {
         textFormat = "Wave: %d",
         position = UDim2(0.5, 0, 0.05, 0),
-        size = UDim2(0, 100, 0, 20),
-        font = love.graphics.newFont(20),
+        size = UDim2(1, 0, 0, 20),
+        font = love.graphics.newFont("assets/fonts/PressStart2P-Regular.ttf", 20),
     })
 
     self.scoreCounter = TextUI(self.game, {
         textFormat = "%d",
         position = UDim2(0, 10, 1, -10),
         anchorPoint = Vector2(0, 1),
-        size = UDim2(0, 100, 0, 20),
-        font = love.graphics.newFont(20),
+        size = UDim2(1, 0, 0, 20),
+        font = love.graphics.newFont("assets/fonts/PressStart2P-Regular.ttf", 20),
         textAlignX = "left",
     })
 
@@ -219,6 +219,8 @@ function PlayState:update(dt)
 
     self.upgradesUI:update()
     self.shotTypeUI:update()
+    self.waveCounter:update()
+    self.scoreCounter:update()
 end
 
 return PlayState

@@ -150,7 +150,7 @@ function UIElement:update()
 end
 
 function UIElement:drawElement()
-    love.graphics.rectangle("line", 0, 0, self.absoluteSize.x, self.absoluteSize.y)
+    love.graphics.rectangle("fill", 0, 0, self.absoluteSize.x, self.absoluteSize.y)
 end
 
 function UIElement:draw()
@@ -190,14 +190,14 @@ function Text:init()
     self.text = ""
     self.textAlignX = "center"
     self.textAlignY = "center"
-    self.font = love.graphics.newFont(12)
+    self.font = love.graphics.newFont("assets/fonts/PressStart2P-Regular.ttf", 8)
 
     self.textColor = Color4(0, 0, 0, 1)
 end
 
 function Text:setFont(font)
     if type(font) == "number" then
-        font = love.graphics.newFont(font)
+        font = love.graphics.newFont("assets/fonts/PressStart2P-Regular.ttf", font)
     end
 
     self.font = font

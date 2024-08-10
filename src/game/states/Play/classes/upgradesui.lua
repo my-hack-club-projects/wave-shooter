@@ -11,10 +11,10 @@ function UpgradesUI:init(game)
     UI.init(self, game)
 
     local frame = self:addChild(Frame)
-    frame.size = UDim2(0.5, 0, 0.5, 0)
+    frame.size = UDim2(0.75, 0, 0.6, 0)
     frame.position = UDim2(0.5, 0, 0.5, 0)
     frame.anchorPoint = Vector2(0.5, 0.5)
-    frame.color = Color4(1, 0, 0, 1)
+    frame.color = Color4.fromHex("#9B2226")
 
     local title = frame:addChild(Text)
     title:setFont(24)
@@ -22,14 +22,14 @@ function UpgradesUI:init(game)
     title.textColor = Color4(1, 1, 1, 1)
     title.text = "Upgrades"
     title.size = UDim2(1, 0, 0.12, 0)
-    title.position = UDim2(0.5, 0, 0, 0)
+    title.position = UDim2(0.5, 0, 0, 10)
     title.anchorPoint = Vector2(0.5, 0)
 
     self.upgradesContainer = frame:addChild(Frame)
-    self.upgradesContainer.size = UDim2(0.95, 0, 0.85, 0)
+    self.upgradesContainer.size = UDim2(0.95, 0, 0.8, 0)
     self.upgradesContainer.position = UDim2(0.5, 0, 0.97, 0)
     self.upgradesContainer.anchorPoint = Vector2(0.5, 1)
-    self.upgradesContainer.color = Color4(0, 1, 0, 1)
+    self.upgradesContainer.color = Color4(0, 0, 0, 0)
 end
 
 function UpgradesUI:fillWithData(data)
@@ -44,14 +44,14 @@ function UpgradesUI:fillWithData(data)
         upgradeFrame.size = UDim2(cellSize, 0, 1, 0)
         upgradeFrame.position = UDim2((cellSize + margin) * (i - 1), 0, 0, 0)
         upgradeFrame.anchorPoint = Vector2(0, 0)
-        upgradeFrame.color = Color4(0, 0, 1, 1)
+        upgradeFrame.color = Color4.fromHex("#005F73")
 
         local name = upgradeFrame:addChild(Text)
         name:setFont(16)
         name.color = Color4(0, 0, 0, 0)
         name.textColor = Color4(1, 1, 1, 1)
         name.text = upgrades.name
-        name.size = UDim2(1, 0, 0.2, 0)
+        name.size = UDim2(0.9, 0, 0.2, 0)
         name.position = UDim2(0.5, 0, 0, 0)
         name.anchorPoint = Vector2(0.5, 0)
 
@@ -60,18 +60,18 @@ function UpgradesUI:fillWithData(data)
         description.color = Color4(0, 0, 0, 0)
         description.textColor = Color4(1, 1, 1, 1)
         description.text = upgrades.description
-        description.size = UDim2(1, 0, 0.6, 0)
+        description.size = UDim2(0.9, 0, 0.6, 0)
         description.position = UDim2(0.5, 0, 0.2, 0)
         description.anchorPoint = Vector2(0.5, 0)
 
         local purchase = upgradeFrame:addChild(Text)
         purchase:setFont(12)
-        purchase.color = Color4(0, 0, 0, 0)
+        purchase.color = Color4.fromHex("#EE9B00")
         purchase.textColor = Color4(1, 1, 1, 1)
         purchase.text = "Purchase"
-        purchase.size = UDim2(1, 0, 0.2, 0)
-        purchase.position = UDim2(0.5, 0, 0.8, 0)
-        purchase.anchorPoint = Vector2(0.5, 0)
+        purchase.size = UDim2(1, -20, 0.2, 0)
+        purchase.position = UDim2(0.5, 0, 1, -10)
+        purchase.anchorPoint = Vector2(0.5, 1)
 
         upgrades.purchase = purchase
     end

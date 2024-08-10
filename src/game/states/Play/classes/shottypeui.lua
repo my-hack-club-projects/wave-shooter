@@ -13,7 +13,7 @@ function ShotTypeUI:init(game)
     UI.init(self, game)
 
     local frame = self:addChild(Frame)
-    frame.size = UDim2(0.25, 0, 0.5, 0)
+    frame.size = UDim2(0.75, 0, 0.5, 0)
     frame.position = UDim2(1, -10, 1, -10)
     frame.anchorPoint = Vector2(1, 1)
     frame.color = Color4(0, 0, 0, 0)
