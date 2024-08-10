@@ -3,6 +3,7 @@ local tablef = require 'classes.tablef'
 local State = require 'classes.state'
 local Vector2 = require 'types.vector2'
 local Color4 = require 'types.color4'
+local UDim2 = require 'types.udim2'
 
 local Camera = require 'classes.camera'
 local Player = require 'classes.player'
@@ -13,6 +14,7 @@ local Boundary = require 'game.states.Play.classes.boundary'
 
 local UpgradesUI = require 'game.states.Play.classes.upgradesui'
 local ShotTypeUI = require 'game.states.Play.classes.shottypeui'
+local TextUI = require 'game.states.Play.classes.textui'
 
 local function getRandomPositionForEnemy(self)
     local randAngle = math.random() * math.pi * 2
@@ -56,6 +58,22 @@ function PlayState:init(game)
     self.upgradesUI.visible = false
 
     self.shotTypeUI = ShotTypeUI(self.game)
+
+    self.waveCounter = TextUI(self.game, {
+        textFormat = "Wave: %d",
+        position = UDim2(0.5, 0, 0.05, 0),
+        size = UDim2(0, 100, 0, 20),
+        font = love.graphics.newFont(20),
+    })
+
+    self.scoreCounter = TextUI(self.game, {
+        textFormat = "%d",
+        position = UDim2(0, 10, 1, -10),
+        anchorPoint = Vector2(0, 1),
+        size = UDim2(0, 100, 0, 20),
+        font = love.graphics.newFont(20),
+        textAlignX = "left",
+    })
 
     self.floorImage = self.entity.new(
         Entity,
@@ -128,6 +146,7 @@ function PlayState:spawnEnemy()
     enemy.signals.died:once(function()
         self.data.score = self.data.score + 1
         print("Score is now " .. self.data.score)
+        self.scoreCounter:setValue(self.data.score)
 
         local me = tablef.find(self.enemies, function(e) return e.enemy == enemy end)
         table.remove(self.enemies, me)
@@ -173,6 +192,7 @@ function PlayState:nextWave()
     self.waveFinishedSpawning = false
 
     print("Wave " .. self.data.wave .. " started")
+    self.waveCounter:setValue(self.data.wave)
 
     for i = 1, self.data.wave do
         self.game:defer(self.enemySpawnInterval * i, function()
@@ -190,6 +210,8 @@ function PlayState:draw()
 
     self.upgradesUI:draw()
     self.shotTypeUI:draw()
+    self.waveCounter:draw()
+    self.scoreCounter:draw()
 end
 
 function PlayState:update(dt)
