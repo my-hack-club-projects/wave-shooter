@@ -27,6 +27,7 @@ Enemy.Presets = {
         shotType.firerate = 3 - strengthRatio * 2.4
         shotType.accuracy = 0.8 + strengthRatio * 0.2
         shotType.lifeDuration = 5 + strengthRatio * 20
+        shotType.image = love.graphics.newImage("assets/images/bullet2.png")
     end,
 
     function(self)
@@ -50,6 +51,7 @@ Enemy.Presets = {
         shotType.firerate = 0.5 + strengthRatio * 25
         shotType.accuracy = 0.7 + strengthRatio * 0.2
         shotType.lifeDuration = 2 + strengthRatio * 2
+        shotType.image = love.graphics.newImage("assets/images/bullet1.png")
     end,
 
     function(self)
@@ -58,6 +60,8 @@ Enemy.Presets = {
         local strength = self.strength
         local strengthRatio = math.min(strength / self.MaxStrength, 1)
         local shotType = self.shotTypes[1]
+
+        self.image = love.graphics.newImage("assets/images/enemy3.png")
 
         self.size = Vector2(1 + strengthRatio * 2, 1 + strengthRatio * 2)
         self.speed = 1.5 + strengthRatio * 0.5
@@ -73,6 +77,7 @@ Enemy.Presets = {
         shotType.lifeDuration = 2 + strengthRatio * 2
         shotType.bulletCount = math.floor(5 + strengthRatio * 15)
         shotType.spreadAngle = math.rad(6 - strengthRatio)
+        shotType.image = love.graphics.newImage("assets/images/bullet3.png")
     end,
 }
 

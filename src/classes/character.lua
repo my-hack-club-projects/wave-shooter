@@ -43,6 +43,7 @@ Character.Upgrades = {
             existing.bulletCount = 1
             existing.size = Vector2(1.5, 0.2)
             existing.penetration = 1 + upgrade.tier
+            existing.image = love.graphics.newImage("assets/images/bullet1.png")
         end,
     },
 
@@ -74,6 +75,7 @@ Character.Upgrades = {
             existing.spreadAngle = math.rad(5)
             existing.size = Vector2(0.3, 0.3)
             existing.penetration = 1 + math.floor(upgrade.tier / 2)
+            existing.image = love.graphics.newImage("assets/images/bullet3.png")
         end,
     },
 
@@ -104,6 +106,7 @@ Character.Upgrades = {
             existing.bulletCount = 1
             existing.size = Vector2(0.3, 0.1)
             existing.penetration = 0
+            existing.image = love.graphics.newImage("assets/images/bullet1.png")
         end,
     },
 }
@@ -155,6 +158,7 @@ function Character:init(props)
             size = Vector2(0.4, 0.4),
             penetration = 0,
             selected = true,
+            image = love.graphics.newImage("assets/images/bullet1.png"),
         },
     }
 
@@ -224,6 +228,7 @@ function Character:fire()
                     damage = self.damage,
                     lifeDuration = self.bulletLifeDuration,
                     penetration = self.penetration,
+                    image = self.bulletImage,
                 }
             )
         )
@@ -258,6 +263,7 @@ function Character:chooseShotType(shotTypeName)
     self.bulletSize = shotType.size or self.bulletSize
     self.spreadAngle = shotType.spreadAngle
     self.penetration = shotType.penetration
+    self.bulletImage = shotType.image
 end
 
 function Character:cycleShotType(n)
@@ -329,7 +335,8 @@ function Character:update(dt)
         self.velocity = velocityDirection * velocityMagnitude
     end
 
-    self.velocityOffset = self.velocityOffset * mathf.clamp(1 - self.velocityOffsetDecay * (self.size.magnitude / 2) * dt, 0, 1)
+    self.velocityOffset = self.velocityOffset *
+        mathf.clamp(1 - self.velocityOffsetDecay * (self.size.magnitude / 2) * dt, 0, 1)
 
     -- Add the velocity to the player position
     self.position = self.position + self.velocity * self.speed * dt + self.velocityOffset * dt
