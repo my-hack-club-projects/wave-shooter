@@ -1,4 +1,5 @@
 local oo = require 'libs.oo'
+local mathf = require 'classes.mathf'
 local signal = require 'libs.signal'
 local Instance = require 'classes.instance'
 local Vector2 = require 'types.vector2'
@@ -85,6 +86,8 @@ function UIElement:init()
     self.size = UDim2()
     self.anchorPoint = Vector2(0.5, 0.5)
     self.color = Color4()
+    self.zindex = 0
+    self.style = "fill"
 
     self.mouseDown = signal.new()
     self.mouseUp = signal.new()
@@ -93,6 +96,48 @@ function UIElement:init()
 
     self.mouseInside = false
     self.mousePressed = true -- So that the first frame doesn't trigger the mouseDown event
+end
+
+function UIElement:findGame()
+    local game = nil
+    local current = self
+    repeat
+        if current.game then
+            game = current.game
+        end
+
+        if current.parent then
+            current = current.parent
+        else
+            break
+        end
+    until game ~= nil
+    return game
+end
+
+function UIElement:animate(property, goal, duration)
+    local game = self:findGame()
+
+    assert(game)
+
+    local startValue = self[property]
+
+    assert(startValue, "Property '" .. property .. "' does not exist on '" .. tostring(self) .. "'!")
+
+    local elapsed = 0
+    local listener
+    listener = game.signals.preUpdate:connect(function(dt)
+        elapsed = elapsed + dt
+
+        if elapsed > duration then
+            listener:disconnect()
+            return
+        end
+
+        local value = mathf.lerp(startValue, goal, elapsed / duration)
+
+        self[property] = value
+    end)
 end
 
 function UIElement:calculateAbs()
@@ -150,7 +195,7 @@ function UIElement:update()
 end
 
 function UIElement:drawElement()
-    love.graphics.rectangle("fill", 0, 0, self.absoluteSize.x, self.absoluteSize.y)
+    love.graphics.rectangle(self.style, 0, 0, self.absoluteSize.x, self.absoluteSize.y)
 end
 
 function UIElement:draw()
@@ -179,7 +224,7 @@ function Frame:init()
 end
 
 function Frame:drawElement()
-    love.graphics.rectangle("fill", 0, 0, self.absoluteSize.x, self.absoluteSize.y)
+    love.graphics.rectangle(self.style, 0, 0, self.absoluteSize.x, self.absoluteSize.y)
 end
 
 local Text = oo.class(UIElement)
