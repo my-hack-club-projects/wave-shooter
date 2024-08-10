@@ -13,6 +13,8 @@ Enemy.Presets = {
         local strengthRatio = math.min(strength / self.MaxStrength, 1)
         local shotType = self.shotTypes[1]
 
+        self.image = love.graphics.newImage("assets/images/enemy1.png")
+
         self.size = Vector2(1 + strengthRatio * 10, 1 + strengthRatio * 10)
         self.speed = 2 - strengthRatio * 1
         self.maxHealth = 10 + strengthRatio * 1000
@@ -33,6 +35,8 @@ Enemy.Presets = {
         local strength = self.strength
         local strengthRatio = math.min(strength / self.MaxStrength, 1)
         local shotType = self.shotTypes[1]
+
+        self.image = love.graphics.newImage("assets/images/enemy2.png")
 
         self.size = Vector2(1 + strengthRatio, 1 + strengthRatio)
         self.speed = 2 + strengthRatio * 2

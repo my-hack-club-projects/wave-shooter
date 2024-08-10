@@ -21,6 +21,9 @@ function Player:init(props)
     self.name = "Player"
     self.camera = props.camera
 
+    self.image = love.graphics.newImage("assets/images/player2.png")
+    self.scaleAxis = "y"
+    self.size = Vector2(2, 2)
     self.autoAimMagnitude = props.autoAimMagnitude or 1
 
     self:chooseShotType("Default")
