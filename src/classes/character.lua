@@ -42,9 +42,11 @@ Character.Upgrades = {
             existing.lifeDuration = 20
             existing.bulletCount = 1
             existing.size = Vector2(1.5, 0.2)
-            existing.penetration = 1 + upgrade.tier
+            existing.penetration = 1 + upgrade.tier * 3
             existing.image = love.graphics.newImage("assets/images/bullet1.png")
             existing.sound = "sniper"
+
+            self:chooseShotType(existing)
         end,
     },
 
@@ -71,13 +73,15 @@ Character.Upgrades = {
             existing.speed = 10 + 2.5 * upgrade.tier
             existing.firerate = 0.8 + 0.4 * upgrade.tier
             existing.accuracy = 0.7
-            existing.lifeDuration = 1 + 0.5 * upgrade.tier
+            existing.lifeDuration = 0.8 + 0.3 * upgrade.tier
             existing.bulletCount = 5 + 2 * upgrade.tier
             existing.spreadAngle = math.rad(5)
             existing.size = Vector2(0.3, 0.3)
             existing.penetration = 1 + math.floor(upgrade.tier / 2)
             existing.image = love.graphics.newImage("assets/images/bullet3.png")
             existing.sound = "shotgun"
+
+            self:chooseShotType(existing)
         end,
     },
 
@@ -100,16 +104,101 @@ Character.Upgrades = {
                 table.insert(self.shotTypes, existing)
             end
 
-            existing.damage = 5 + 2 * upgrade.tier
+            existing.damage = 12 + 10 * upgrade.tier
             existing.speed = 10 + 2.5 * upgrade.tier
-            existing.firerate = 4 + 1 * upgrade.tier
-            existing.accuracy = 0.8 + 0.03 * upgrade.tier
+            existing.firerate = 6 + 1 * upgrade.tier
+            existing.accuracy = 0.85 + 0.03 * upgrade.tier
             existing.lifeDuration = 5
             existing.bulletCount = 1
-            existing.size = Vector2(0.3, 0.1)
+            existing.size = Vector2(0.4, 0.25)
             existing.penetration = 0
             existing.image = love.graphics.newImage("assets/images/bullet1.png")
             existing.sound = "machine_gun"
+
+            self:chooseShotType(existing)
+        end,
+    },
+
+    cannon = {
+        name = "Cannon",
+        description = "A powerful shot that can penetrate bullets!",
+        tier = 0,
+
+        apply = function(self)
+            local upgrade = self.Upgrades.cannon
+            local existing = self.shotTypes[tablef.find(self.shotTypes, function(shotType)
+                return shotType.name == "Cannon"
+            end)]
+
+            if not existing then
+                existing = {
+                    name = "Cannon"
+                }
+
+                table.insert(self.shotTypes, existing)
+            end
+
+            existing.damage = 70 + 100 * upgrade.tier
+            existing.speed = 10 - 1 * upgrade.tier
+            existing.firerate = 0.4 - 0.07 * upgrade.tier
+            existing.accuracy = 1
+            existing.lifeDuration = 10
+            existing.bulletCount = 1
+            existing.size = Vector2(1, 1) * (0.5 + 0.8 * upgrade.tier)
+            existing.penetration = 10 + 10 * upgrade.tier
+            existing.image = love.graphics.newImage("assets/images/bullet2.png")
+            existing.sound = "cannon"
+
+            self:chooseShotType(existing)
+        end,
+    },
+
+    regeneration = {
+        name = "Regeneration",
+        description = "Heal more over time!",
+        tier = 0,
+
+        apply = function(self)
+            local upgrade = self.Upgrades.regeneration
+
+            self.healSpeed = 1 + 3 * upgrade.tier
+        end,
+    },
+
+    speed = {
+        name = "Speed",
+        description = "Move faster!",
+        tier = 0,
+
+        apply = function(self)
+            local upgrade = self.Upgrades.speed
+
+            self.speed = 1 + 1 * upgrade.tier
+        end,
+    },
+
+    health = {
+        name = "Health",
+        description = "More health!",
+        tier = 0,
+
+        apply = function(self)
+            local upgrade = self.Upgrades.health
+
+            self.maxHealth = 100 + 100 * upgrade.tier
+            self.health = self.maxHealth
+        end,
+    },
+
+    recoilReduction = {
+        name = "Recoil Reduction",
+        description = "Less recoil!",
+        tier = 0,
+
+        apply = function(self)
+            local upgrade = self.Upgrades.recoilReduction
+
+            self.recoilModifier = 1 - 0.1 * upgrade.tier
         end,
     },
 }
@@ -248,12 +337,15 @@ function Character:chooseShotType(shotTypeName)
         v.selected = false
     end
 
-    local shotType = self.shotTypes[tablef.find(self.shotTypes, function(shotType)
-        return shotType.name == shotTypeName
-    end)]
+    local shotType = shotTypeName
+    if type(shotTypeName) == "string" then
+        shotType = self.shotTypes[tablef.find(self.shotTypes, function(shotType)
+            return shotType.name == shotTypeName
+        end)]
 
-    if not shotType then
-        return
+        if not shotType then
+            return
+        end
     end
 
     shotType.selected = true
@@ -276,7 +368,7 @@ end
 function Character:cycleShotType(n)
     local currentIndex = tablef.find(self.shotTypes, function(shotType)
         return shotType.selected
-    end)
+    end) or 1
 
     local newIndex = (currentIndex + n - 1) % #self.shotTypes + 1
 
@@ -320,9 +412,10 @@ function Character:upgrade(upgradeName)
         return
     end
 
+    local nShotTypes = #self.shotTypes
+
     upgrade.tier = upgrade.tier + 1
     upgrade.apply(self)
-    self:chooseShotType(upgrade.name)
 end
 
 function Character:update(dt)

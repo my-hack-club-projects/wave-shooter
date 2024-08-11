@@ -41,14 +41,14 @@ Enemy.Presets = {
 
         self.size = Vector2(1 + strengthRatio, 1 + strengthRatio)
         self.speed = 2 + strengthRatio * 2
-        self.maxHealth = 10 + strengthRatio * 100
+        self.maxHealth = 10 + strengthRatio * 150
         self.health = self.maxHealth
-        self.healSpeed = self.maxHealth / (10 - strengthRatio * 5)
+        self.healSpeed = self.maxHealth / (10 - strengthRatio * 8)
 
         shotType.size = self.size / 5
-        shotType.damage = 5 + strengthRatio * 4
+        shotType.damage = 5 + strengthRatio * 8
         shotType.speed = 10 + strengthRatio * 15
-        shotType.firerate = 0.5 + strengthRatio * 25
+        shotType.firerate = 0.5 + strengthRatio * 30
         shotType.accuracy = 0.7 + strengthRatio * 0.2
         shotType.lifeDuration = 2 + strengthRatio * 2
         shotType.image = love.graphics.newImage("assets/images/bullet1.png")

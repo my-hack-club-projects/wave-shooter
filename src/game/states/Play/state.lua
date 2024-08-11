@@ -42,7 +42,7 @@ function PlayState:init(game)
     self.name = "PlayState"
     self.camera = Camera(self.game)
 
-    self.mapRadius = 50
+    self.mapRadius = 80
     self.enemySpawnRadius = self.mapRadius * 0.8
     self.enemySpawnInterval = 1
     self.waveFinishedSpawning = true
