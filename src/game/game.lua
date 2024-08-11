@@ -1,5 +1,6 @@
 local oo = require 'libs.oo'
 local signal = require 'libs.signal'
+local moonshine = require 'libs.moonshine'
 
 local Sound = require 'classes.sound'
 
@@ -35,6 +36,18 @@ function Game:init()
         preUpdate = signal.new(),
         postUpdate = signal.new(),
     }
+
+    -- shaders
+    self.effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.scanlines)
+
+    self.effect.parameters = {
+        crt = { feather = 0.1, distortionFactor = { 1.1, 1.1 } },
+        scanlines = { width = 2, opacity = 0.5 },
+    }
+
+    self.signals.resize:connect(function(width, height)
+        self.effect.resize(love.graphics.getWidth(), love.graphics.getHeight())
+    end)
 
     -- properties
     self.UnitSize = 32
@@ -154,7 +167,9 @@ function Game:draw()
     self.signals.preDraw:dispatch()
 
     if self.current then
-        self.current:draw()
+        self.effect(function()
+            self.current:draw()
+        end)
     end
 
     self.signals.postDraw:dispatch()
