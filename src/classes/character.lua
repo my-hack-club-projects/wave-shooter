@@ -44,6 +44,7 @@ Character.Upgrades = {
             existing.size = Vector2(1.5, 0.2)
             existing.penetration = 1 + upgrade.tier
             existing.image = love.graphics.newImage("assets/images/bullet1.png")
+            existing.sound = "sniper"
         end,
     },
 
@@ -76,6 +77,7 @@ Character.Upgrades = {
             existing.size = Vector2(0.3, 0.3)
             existing.penetration = 1 + math.floor(upgrade.tier / 2)
             existing.image = love.graphics.newImage("assets/images/bullet3.png")
+            existing.sound = "shotgun"
         end,
     },
 
@@ -107,6 +109,7 @@ Character.Upgrades = {
             existing.size = Vector2(0.3, 0.1)
             existing.penetration = 0
             existing.image = love.graphics.newImage("assets/images/bullet1.png")
+            existing.sound = "machine_gun"
         end,
     },
 }
@@ -159,6 +162,7 @@ function Character:init(props)
             penetration = 0,
             selected = true,
             image = love.graphics.newImage("assets/images/bullet1.png"),
+            sound = "default_gun",
         },
     }
 
@@ -264,6 +268,7 @@ function Character:chooseShotType(shotTypeName)
     self.spreadAngle = shotType.spreadAngle
     self.penetration = shotType.penetration
     self.bulletImage = shotType.image
+    self.bulletSound = shotType.sound
 end
 
 function Character:cycleShotType(n)

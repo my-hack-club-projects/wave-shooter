@@ -167,4 +167,10 @@ function Player:draw()
     self.targetHighlightUI:draw()
 end
 
+function Player:fire()
+    Character.fire(self)
+
+    self.game.sound:play(self.bulletSound)
+end
+
 return Player
