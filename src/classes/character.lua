@@ -269,6 +269,8 @@ function Character:chooseShotType(shotTypeName)
     self.penetration = shotType.penetration
     self.bulletImage = shotType.image
     self.bulletSound = shotType.sound
+
+    return shotType
 end
 
 function Character:cycleShotType(n)
@@ -278,7 +280,11 @@ function Character:cycleShotType(n)
 
     local newIndex = (currentIndex + n - 1) % #self.shotTypes + 1
 
-    self:chooseShotType(self.shotTypes[newIndex].name)
+    local new = self:chooseShotType(self.shotTypes[newIndex].name)
+
+    if new ~= self.shotTypes[currentIndex] then
+        self.game.sound:play("equip")
+    end
 end
 
 function Character:getRandomUpgrades(nUpgrades)

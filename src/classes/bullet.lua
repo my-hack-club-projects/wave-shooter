@@ -52,6 +52,8 @@ function Bullet:checkCollision(characters)
             character:takeDamage(self.damage)
             self.alive = false
             self:destroy()
+
+            self.game.sound:play("hitmarker", 0.2)
         end
     end
 
@@ -64,6 +66,8 @@ function Bullet:checkCollision(characters)
 
     for _, bullet in ipairs(bullets) do
         if bullet.firedBy ~= self.firedBy and self.penetration >= bullet.penetration and radiusCollision(self.position, self.size.x, bullet.position, bullet.size.x) then
+            self.game.sound:play("hitmarker", 0.2)
+
             bullet.alive = false
             bullet:destroy()
 

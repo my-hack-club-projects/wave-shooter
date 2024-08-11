@@ -135,6 +135,9 @@ function PlayState:enter(prevState)
 
     self.fadeUI = FadeUI(self.game)
     self.fadeUI:fadeOut(1)
+
+    self.music = self.game.sound:play("music" .. math.random(1, 3), 0.4)
+    self.music:setLooping(true)
 end
 
 function PlayState:exit()
@@ -143,6 +146,8 @@ function PlayState:exit()
     for _, listener in ipairs(self.listeners) do
         listener:disconnect()
     end
+
+    self.music:stop()
 end
 
 function PlayState:spawnEnemy()

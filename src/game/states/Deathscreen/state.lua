@@ -92,6 +92,8 @@ function Deathscreen:enter(prevState, data)
             self.retryButton:animate("anchorPoint", Vector2(0.5, 0), 0.5)
         end)
     end)
+
+    self.game.sound:play("death", 2)
 end
 
 function Deathscreen:exit()

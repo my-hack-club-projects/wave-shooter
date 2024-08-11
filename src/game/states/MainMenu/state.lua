@@ -55,6 +55,15 @@ function MainMenu:enter()
             image = love.graphics.newImage("assets/images/floor.png"),
         }
     )
+
+    self.music = self.game.sound:play("main_menu_music", 0.4)
+    self.music:setLooping(true)
+end
+
+function MainMenu:exit()
+    State.exit(self)
+
+    self.music:stop()
 end
 
 function MainMenu:update(dt)

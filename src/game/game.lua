@@ -14,6 +14,8 @@ function Game:init()
     -- sound
     self.sound = Sound()
 
+    love.audio.setVolume(0.5)
+
     -- signals
     self.signals = {
         stateChange = signal.new(),
