@@ -100,10 +100,10 @@ Character.Upgrades = {
                 table.insert(self.shotTypes, existing)
             end
 
-            existing.damage = 1 + 0.5 * upgrade.tier
+            existing.damage = 5 + 2 * upgrade.tier
             existing.speed = 10 + 2.5 * upgrade.tier
-            existing.firerate = 20 + 10 * upgrade.tier
-            existing.accuracy = 0.8 + 0.05 * upgrade.tier
+            existing.firerate = 4 + 1 * upgrade.tier
+            existing.accuracy = 0.8 + 0.03 * upgrade.tier
             existing.lifeDuration = 5
             existing.bulletCount = 1
             existing.size = Vector2(0.3, 0.1)
@@ -316,6 +316,7 @@ function Character:upgrade(upgradeName)
 
     upgrade.tier = upgrade.tier + 1
     upgrade.apply(self)
+    self:chooseShotType(upgrade.name)
 end
 
 function Character:update(dt)
