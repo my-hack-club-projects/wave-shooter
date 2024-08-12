@@ -57,14 +57,14 @@ function PlayState:init(game)
 
     self.waveCounter = TextUI(self.game, {
         textFormat = "Wave: %d",
-        position = UDim2(0.5, 0, 0.05, 0),
+        position = UDim2(0.5, 0, 0.1, 0),
         size = UDim2(1, 0, 0, 20),
         font = love.graphics.newFont("assets/fonts/PressStart2P-Regular.ttf", 20),
     })
 
     self.scoreCounter = TextUI(self.game, {
         textFormat = "%d",
-        position = UDim2(0, 10, 1, -10),
+        position = UDim2(0.05, 0, 0.95, 0),
         anchorPoint = Vector2(0, 1),
         size = UDim2(1, 0, 0, 20),
         font = love.graphics.newFont("assets/fonts/PressStart2P-Regular.ttf", 20),
@@ -135,6 +135,10 @@ function PlayState:enter(prevState)
 
     self.fadeUI = FadeUI(self.game)
     self.fadeUI:fadeOut(1)
+
+    self.game:defer(1.5, function()
+        self.fadeUI.visible = false
+    end)
 
     self.music = self.game.sound:play("music" .. math.random(1, 3), 0.4)
     self.music:setLooping(true)

@@ -71,7 +71,7 @@ function Bullet:checkCollision(characters)
             bullet.alive = false
             bullet:destroy()
 
-            self.penetration = self.penetration - self.penetration
+            self.penetration = self.penetration - bullet.penetration
 
             if self.penetration < 0 then
                 self.alive = false

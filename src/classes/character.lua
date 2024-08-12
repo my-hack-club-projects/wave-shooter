@@ -35,14 +35,14 @@ Character.Upgrades = {
                 table.insert(self.shotTypes, existing)
             end
 
-            existing.damage = 100 + 50 * upgrade.tier
+            existing.damage = 50 + 60 * upgrade.tier
             existing.speed = 20 + 5 * upgrade.tier
             existing.firerate = 0.4 + 0.3 * upgrade.tier
             existing.accuracy = 1
             existing.lifeDuration = 20
             existing.bulletCount = 1
             existing.size = Vector2(1.5, 0.2)
-            existing.penetration = 1 + upgrade.tier * 3
+            existing.penetration = 2 + upgrade.tier * 3
             existing.image = love.graphics.newImage("assets/images/bullet1.png")
             existing.sound = "sniper"
 
@@ -111,7 +111,7 @@ Character.Upgrades = {
             existing.lifeDuration = 5
             existing.bulletCount = 1
             existing.size = Vector2(0.4, 0.25)
-            existing.penetration = 0
+            existing.penetration = 1
             existing.image = love.graphics.newImage("assets/images/bullet1.png")
             existing.sound = "machine_gun"
 
@@ -138,7 +138,7 @@ Character.Upgrades = {
                 table.insert(self.shotTypes, existing)
             end
 
-            existing.damage = 70 + 100 * upgrade.tier
+            existing.damage = 35 + 50 * upgrade.tier
             existing.speed = 10 - 1 * upgrade.tier
             existing.firerate = 0.4 - 0.07 * upgrade.tier
             existing.accuracy = 1
@@ -173,7 +173,7 @@ Character.Upgrades = {
         apply = function(self)
             local upgrade = self.Upgrades.speed
 
-            self.speed = 1 + 1 * upgrade.tier
+            self.speed = 2 + 1 * upgrade.tier
         end,
     },
 
@@ -248,7 +248,7 @@ function Character:init(props)
             lifeDuration = 1,
             bulletCount = 1,
             size = Vector2(0.4, 0.4),
-            penetration = 0,
+            penetration = 1,
             selected = true,
             image = love.graphics.newImage("assets/images/bullet1.png"),
             sound = "default_gun",

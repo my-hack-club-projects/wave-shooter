@@ -17,7 +17,7 @@ Enemy.Presets = {
 
         self.size = Vector2(1 + strengthRatio * 10, 1 + strengthRatio * 10)
         self.speed = 2 - strengthRatio * 1
-        self.maxHealth = 10 + strengthRatio * 1000
+        self.maxHealth = 5 + strengthRatio * 800
         self.health = self.maxHealth
         self.healSpeed = self.maxHealth / (10 - strengthRatio * 5)
 
@@ -26,6 +26,7 @@ Enemy.Presets = {
         shotType.speed = 10 - strengthRatio * 6
         shotType.firerate = 3 - strengthRatio * 2.4
         shotType.accuracy = 0.8 + strengthRatio * 0.2
+        shotType.penetration = 1 + strengthRatio * 2
         shotType.lifeDuration = 5 + strengthRatio * 20
         shotType.image = love.graphics.newImage("assets/images/bullet2.png")
     end,
@@ -41,15 +42,16 @@ Enemy.Presets = {
 
         self.size = Vector2(1 + strengthRatio, 1 + strengthRatio)
         self.speed = 2 + strengthRatio * 2
-        self.maxHealth = 10 + strengthRatio * 150
+        self.maxHealth = 50 + strengthRatio * 150
         self.health = self.maxHealth
         self.healSpeed = self.maxHealth / (10 - strengthRatio * 8)
 
         shotType.size = self.size / 5
-        shotType.damage = 5 + strengthRatio * 8
+        shotType.damage = 5 + strengthRatio * 5
         shotType.speed = 10 + strengthRatio * 15
         shotType.firerate = 0.5 + strengthRatio * 30
         shotType.accuracy = 0.7 + strengthRatio * 0.2
+        shotType.penetration = 0.5 + strengthRatio * 1
         shotType.lifeDuration = 2 + strengthRatio * 2
         shotType.image = love.graphics.newImage("assets/images/bullet1.png")
     end,
@@ -64,19 +66,20 @@ Enemy.Presets = {
         self.image = love.graphics.newImage("assets/images/enemy3.png")
 
         self.size = Vector2(1 + strengthRatio * 2, 1 + strengthRatio * 2)
-        self.speed = 1.5 + strengthRatio * 0.5
-        self.maxHealth = 10 + strengthRatio * 200
+        self.speed = 2 + strengthRatio * 0.5
+        self.maxHealth = 35 + strengthRatio * 200
         self.health = self.maxHealth
         self.healSpeed = self.maxHealth / (10 - strengthRatio * 5)
-
+        self.recoilModifier = 0.3 - strengthRatio * 0.2
         shotType.size = self.size / 3
         shotType.damage = 5 + strengthRatio * 10
         shotType.speed = 20 - strengthRatio * 7
-        shotType.firerate = 0.5 + strengthRatio * 2
+        shotType.firerate = 0.5 + strengthRatio * 1.5
         shotType.accuracy = 0.8 + strengthRatio * 0.2
+        shotType.penetration = 0.5 + strengthRatio * 0.5
         shotType.lifeDuration = 2 + strengthRatio * 2
         shotType.bulletCount = math.floor(5 + strengthRatio * 15)
-        shotType.spreadAngle = math.rad(6 - strengthRatio)
+        shotType.spreadAngle = math.rad(3 - strengthRatio * 2)
         shotType.image = love.graphics.newImage("assets/images/bullet3.png")
     end,
 }

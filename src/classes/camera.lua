@@ -12,13 +12,13 @@ function Camera:init(game)
     self.scale = Vector2(1, 1)
     self.rotation = 0
 
-    self.horizontalFov = 35 -- How many units wide the camera can see
+    self.horizontalFov = 55 -- How many units wide the camera can see
 
     self._attached = false
 end
 
 function Camera:getFovScale()
-    return love.graphics.getWidth() / self.horizontalFov / self.game.UnitSize
+    return math.max(love.graphics.getDimensions()) / self.horizontalFov / self.game.UnitSize
 end
 
 function Camera:getUnitSize()

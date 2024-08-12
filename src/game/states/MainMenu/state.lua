@@ -49,7 +49,7 @@ function MainMenu:enter()
         {
             game = self.game,
             position = Vector2(0, 0),
-            size = Vector2(100, 100),
+            size = Vector2(200, 200),
             color = Color4.fromHex("#005F73"),
             zindex = -1,
             image = love.graphics.newImage("assets/images/floor.png"),
